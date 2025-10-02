@@ -1,0 +1,35 @@
+UDL Assessment Chatbot - Project Description for LLM Development
+Overview: We are developing an AI chatbot trained on the Universal Design for Learning (UDL)
+framework to support K-12 teachers in creating more inclusive assessment practices, in public schools in
+the USA. The tool is designed to augment rather than replace teacher expertise by building their
+capacity for inclusive design.
+Core Functionality:
+Task 1: Assessment Evaluation
+• Analyze existing teacher-provided assessments against UDL principles
+• Identify specific barriers to accessibility and inclusion
+• Provide detailed feedback on areas for improvement with clear explanations of UDL rationale
+• Flag potential issues related to cognitive load, accessibility, and equity
+Task 2: Assessment Design Support
+• Generate multiple assessment options aligned with UDL Principle 3: Multiple Means of Action
+and Expression
+• Provide diverse formats for students to demonstrate knowledge (written, oral, visual,
+multimedia, collaborative, etc.)
+• Ensure options maintain equivalent rigor and learning objectives across formats
+• Include brief explanations of why each option supports inclusive learning
+Critical Design Requirements:
+• Transparency: Explain UDL reasoning behind each suggestion to build teacher understanding
+• Teacher agency: Present options rather than prescriptive solutions; enable easy customization
+• Cultural responsiveness prompts: Include questions that encourage teachers to consider cultural
+context and student-specific factors
+• Avoid deficit framing: Focus on removing barriers rather than "accommodating differences"
+• Professional development focus: Help teachers learn UDL principles, not create dependency
+Training Data Needs:
+• UDL Guidelines and framework documentation
+• Evidence-based assessment design literature
+• Diverse examples of UDL-aligned assessments across subjects and grade levels
+• Examples that reflect multiple cultural pedagogical approaches
+Output Format:
+• Evaluation should include: strengths, barriers identified, specific improvement suggestions, UDL
+principles applied
+• Assessment options should include: format description, implementation guidance, UDL
+rationale, considerations for teacher adaptation
