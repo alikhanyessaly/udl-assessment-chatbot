@@ -1,6 +1,9 @@
 # Environment variables
 .env
 
+# Chat sessions data
+chat_sessions.pkl
+
 # Python
 __pycache__/
 *.py[cod]

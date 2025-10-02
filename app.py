@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 import openai
+import pickle
 
 # Load environment variables
 load_dotenv()
@@ -18,8 +19,29 @@ client = None
 if os.getenv('OPENAI_API_KEY'):
     client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-# In-memory storage for chat sessions (in production, use a database)
-chat_sessions = {}
+# Persistent storage for chat sessions
+CHAT_SESSIONS_FILE = 'chat_sessions.pkl'
+
+def load_chat_sessions():
+    """Load chat sessions from file"""
+    try:
+        if os.path.exists(CHAT_SESSIONS_FILE):
+            with open(CHAT_SESSIONS_FILE, 'rb') as f:
+                return pickle.load(f)
+    except Exception as e:
+        print(f"Error loading chat sessions: {e}")
+    return {}
+
+def save_chat_sessions():
+    """Save chat sessions to file"""
+    try:
+        with open(CHAT_SESSIONS_FILE, 'wb') as f:
+            pickle.dump(chat_sessions, f)
+    except Exception as e:
+        print(f"Error saving chat sessions: {e}")
+
+# Load existing chat sessions
+chat_sessions = load_chat_sessions()
 
 # UDL Framework Knowledge Base
 UDL_KNOWLEDGE = {
@@ -81,6 +103,7 @@ def update_session_activity(session_token):
     """Update last activity timestamp"""
     if session_token in chat_sessions:
         chat_sessions[session_token]["last_activity"] = datetime.now().isoformat()
+        save_chat_sessions()
 
 def analyze_assessment_udl(assessment_description):
     """Analyze assessment against UDL principles"""
@@ -204,6 +227,7 @@ def chat():
             'content': message,
             'timestamp': datetime.now().isoformat()
         })
+        save_chat_sessions()
         
         # Determine response type and generate appropriate response
         response_content = ""
@@ -255,6 +279,7 @@ Remember, I'm here to build your capacity for inclusive design while maintaining
         })
         
         update_session_activity(session_token)
+        save_chat_sessions()
         
         return jsonify({
             'response': response_content,
