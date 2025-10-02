@@ -424,6 +424,9 @@
         <div class="chat-header">
             <div class="session-info" id="sessionInfo">
                 <i class="fas fa-key"></i> Session: <span id="sessionToken">New</span>
+                <button id="clearSessionBtn" onclick="clearSession()" style="margin-left: 10px; background: none; border: none; color: white; cursor: pointer; opacity: 0.7;" title="Clear session">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
             <h1><i class="fas fa-graduation-cap"></i> UDL Assessment Assistant</h1>
             <p>Supporting inclusive assessment design for K-12 educators</p>
@@ -480,7 +483,7 @@
     </div>
 
     <script>
-        let sessionToken = null;
+        let sessionToken = localStorage.getItem('udl_chat_session_token');
         let messageCount = 0;
 
         // Initialize chat
@@ -491,6 +494,11 @@
             const chatMessages = document.getElementById('chatMessages');
             const typingIndicator = document.getElementById('typingIndicator');
             const sessionInfo = document.getElementById('sessionToken');
+
+            // Load existing session if available
+            if (sessionToken) {
+                loadExistingSession();
+            }
 
             // Auto-resize textarea
             messageInput.addEventListener('input', function() {
@@ -590,6 +598,7 @@
                         // Update session token
                         if (data.session_token && !sessionToken) {
                             sessionToken = data.session_token;
+                            localStorage.setItem('udl_chat_session_token', sessionToken);
                             sessionInfo.textContent = sessionToken.substring(0, 8) + '...';
                         }
                         
@@ -609,11 +618,88 @@
 
             // Make sendMessage available globally for quick actions
             window.sendMessage = sendMessage;
+
+            async function loadExistingSession() {
+                try {
+                    const response = await fetch(`/api/session/${sessionToken}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.messages && data.messages.length > 0) {
+                            // Remove welcome message
+                            const welcomeMessage = chatMessages.querySelector('.welcome-message');
+                            if (welcomeMessage) {
+                                welcomeMessage.remove();
+                            }
+                            
+                            // Load all messages from the session
+                            data.messages.forEach(msg => {
+                                addMessage(msg.content, msg.role, msg.timestamp);
+                            });
+                            
+                            // Update session info
+                            sessionInfo.textContent = sessionToken.substring(0, 8) + '...';
+                            messageCount = data.messages.length;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading session:', error);
+                    // Clear invalid session token
+                    localStorage.removeItem('udl_chat_session_token');
+                    sessionToken = null;
+                }
+            }
         });
 
         function sendQuickMessage(message) {
             document.getElementById('messageInput').value = message;
             document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+        }
+
+        function clearSession() {
+            if (confirm('Are you sure you want to clear this chat session? This will remove all messages and start a new conversation.')) {
+                // Clear localStorage
+                localStorage.removeItem('udl_chat_session_token');
+                
+                // Reset session variables
+                sessionToken = null;
+                messageCount = 0;
+                
+                // Update UI
+                document.getElementById('sessionToken').textContent = 'New';
+                
+                // Clear chat messages and show welcome screen
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = `
+                    <div class="welcome-message">
+                        <h2>Welcome to the UDL Assessment Chatbot!</h2>
+                        <p>I'm here to help you create more inclusive assessments using Universal Design for Learning principles.</p>
+                        <p>I can help you in two main ways:</p>
+                        
+                        <div class="udl-principles">
+                            <div class="principle-card">
+                                <h4><i class="fas fa-search"></i> Assessment Evaluation</h4>
+                                <p>Share an existing assessment and I'll analyze it against UDL principles, identifying strengths, barriers, and improvement suggestions.</p>
+                            </div>
+                            <div class="principle-card">
+                                <h4><i class="fas fa-lightbulb"></i> Assessment Design</h4>
+                                <p>Tell me about learning objectives, grade level, and subject, and I'll generate multiple UDL-aligned assessment options.</p>
+                            </div>
+                        </div>
+
+                        <div class="quick-actions">
+                            <div class="quick-action" onclick="sendQuickMessage('Evaluate my assessment: Students will write a 5-page essay about the causes of World War II')">
+                                <i class="fas fa-clipboard-check"></i> Evaluate Assessment
+                            </div>
+                            <div class="quick-action" onclick="sendQuickMessage('Help me design assessment options for: Understanding photosynthesis, Grade 7, Science')">
+                                <i class="fas fa-pencil-ruler"></i> Design Options
+                            </div>
+                            <div class="quick-action" onclick="sendQuickMessage('What are the key UDL principles for assessment design?')">
+                                <i class="fas fa-question-circle"></i> UDL Principles
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
     </script>
 </body>
