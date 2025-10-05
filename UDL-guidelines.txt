@@ -1,0 +1,512 @@
+Principle: Design Multiple Means of Representation
+  
+Learners differ in the ways they perceive and make meaning of information. For example, those with sensory disabilities (e.g., blindness or deafness), learning disabilities (e.g., dyslexia), and those representing diverse or non-dominant cultures and/or languages all approach content differently. And these differing approaches must be honored and valued. Equally important is the consideration of how people, cultures, individual and collective identities, perspectives, and ways of knowing are represented within the content. Learning, and transfer of learning, occurs when multiple representations and perspectives are used, because they support learners to make connections within, as well as between, concepts. In short, there is not one means of representation that will be optimal for every learner; providing options for representation is essential.
+
+# Guideline 1: Design Options for Perception
+Learning is impossible if information is imperceptible to the learner, difficult when information is presented in formats that require extraordinary effort or assistance, and oppressive when content reinforces stereotypes or deficit thinking. To reduce barriers to learning, it is important to ensure that key information is equally perceptible to all learners by: 1) offering the same information through different modalities (e.g., through vision, hearing, or touch); 2) offering information in a format that will allow for adjustability by the user (e.g., text that can be enlarged, sounds that can be amplified); and 3) offering a variety of perspectives (e.g., incorporating a range of authors and contributors; including authentic representations of people, cultures, histories, and identities).
+Multiple representations not only ensure that information is accessible to learners with particular sensory and perceptual disabilities, but also support access and comprehension for many others. In addition, providing learners with the opportunity to see themselves represented in the curriculum (e.g., "mirrors") as well as experience the perspectives of others (e.g., "windows") allows for stronger, more authentic connections to learning and greater opportunities for meaning making.
+
+Prompt: How might we increase accessibility, flexibility, and diversity in the sharing of information?
+
+## Consideration 1.1: Support opportunities to customize the display of information
+	  
+In print materials, the display of information is fixed and permanent. Digital materials allow the display of the same information to be flexible and customizable. For example, a call-out box of background information may be displayed in a different location, enlarged, emphasized by the use of color, or deleted entirely. Such flexibility provides options for increasing the perceptual clarity and salience of information for a diversity of learners and allowing for preference adjustments for others. While these customizations can be more difficult with print materials, these are features that can be available through digital materials. It is important to note that digital does not mean the content is accessible, as many digital materials are equally inaccessible because the accessibility features were not included during content development. Educators and learners should work together to attain the best match of features to learning needs.
+Offer information in accessible formats so the following perceptual features can be customized:
+	•	Font, size of text, character and line spacing, character width, background color, and text colors
+	•	Size of images, graphs, tables, and other visual content
+	•	Contrast between background and images
+	•	Color used for information or emphasis
+	•	Volume or rate of speech or sound
+	•	Speed or timing of video, animation, sound, simulations, etc.
+	•	Layout of visual or other elements
+
+## Consideration 1.2: Support multiple ways to perceive information
+  
+Images, graphics, animations, videos, or text may seem to be the optimal way to present information, especially when the information is about the relationships between objects, actions, numbers, or events. But such visual representations are not equally accessible to all learners, especially learners with visual disabilities or those who are not familiar with the type of graphic being used. Visual information can be quite dense, particularly with visual art, which can have multiple complex meanings and interpretations depending on contextual factors and the viewer’s knowledge base. To ensure all learners have equal access to information, it is essential to provide non-visual alternatives.
+
+Provide descriptions (text or spoken) for all images, graphics, videos, or animations.
+Use touch equivalents (tactile graphics or objects of reference) for key visuals that represent concepts.
+Provide physical objects and spatial models to convey perspective or interaction.
+Provide auditory cues for key concepts and transitions in visual information.
+Text is a special case of visual information. The transformation from text into audio is among the most easily accomplished methods for increasing accessibility. The advantage of text over audio is its permanence. At the same time, providing text that is easily transformable into audio accomplishes that permanence without sacrificing the advantages of audio. Digital synthetic text-to-speech is increasingly effective, but still disappoints in its ability to carry the valuable information in prosody.
+
+Follow accessibility standards (NIMASexternal site, DAISYexternal site, etc.) when creating digital text.
+Allow for a competent aide, partner, or “intervener” to read text aloud.
+Provide access to text-to-speech software.
+Sound is a particularly effective way to convey the impact of information, which is why sound design is so important in movies and why the human voice is particularly effective for conveying emotion and significance. However, information conveyed solely through sound is not equally accessible to all learners and is especially inaccessible for learners with hearing disabilities or for learners who have memory difficulties. Consider how frequently directions are only given orally. For learners who need more time to process information, this single mode of sharing information presents a barrier. In addition, listening itself is a complex strategic skill that must be learned. To ensure all learners have access to learning, options should be available for any information, including emphasis, presented aurally.
+
+Use text equivalents in the form of captions or automated speech-to-text (voice recognition) for spoken language.
+Provide visual diagrams, charts, or notations of music or sound.
+Provide written transcripts for videos or auditory clips.
+Provide sign languages for spoken communication.
+Use visual analogues to represent emphasis and prosody (e.g., emoticons, symbols, or images).
+Provide visual or tactile (e.g., vibrations) equivalents for sound effects or alerts.
+Provide visual and/or emotional description for musical interpretation.
+
+## Consideration 1.3: Represent a diversity of perspectives and identities in authentic ways
+  
+In addition to sensory perception, it is important for learners to perceive themselves and the perspectives of others in the curriculum, instructional materials, and media used in the learning environment. When learners are able to identify with perspectives and cultures portrayed in learning materials, it fosters a sense of validation, affirmation, and belonging. When learners never experience materials or references to which they can relate, they may feel a sense of subordination, as if their perspectives are less valid and appreciated within the learning environment. It is also important for learners to be exposed to the perspectives, identities, cultures, histories, and world views of others. Without exposure to other perspectives, learners may gain the false understanding that their lived experiences are universal for everyone or that others’ perspectives are less valid or valued.
+
+Incorporate a range of authors with various identities, including (but not limited to) gender, race, different abilities, nationality, and socio-economic background.
+Recognize the range of people, cultures, and histories that contribute to current understanding.
+Attend to the ways in which people and cultures are being portrayed.
+Challenge stereotypical or harmful portrayals of people and cultures.
+Seek authentic, complex portrayals of people, cultures, histories, and world views.
+Facilitate listening to diverse perspectives.
+
+# Guideline 2: Design Options for Language & Symbols
+
+Learners vary in their facility with different forms of representation—both linguistic and non-linguistic. Vocabulary that may sharpen and clarify concepts for one learner may be difficult to understand for another. An equals sign (=) might help some learners understand that the two sides of the equation need to be balanced, but might cause confusion to a student who does not understand what it means. A graph that illustrates the relationship between two variables may be informative to one learner and inaccessible or puzzling to another. A picture or image that carries meaning for some learners may carry very different meanings for learners from differing cultural or familial backgrounds. As a result, inequalities arise when information is presented to all learners through a single form of representation. An important instructional strategy is to ensure that multiple representations are available not only for accessibility, but for clarity, comprehensibility, and creating a shared understanding for all learners.
+
+Prompt: How might we offer, honor, and value multiple representations of language and symbols?
+
+## Consideration 2.1: Clarify vocabulary, symbols, and language structures
+
+The semantic elements through which information is presented—the words, symbols, numbers, icons, and language structures—are differentially accessible to learners with varying backgrounds, languages, and lexical knowledge. To ensure accessibility for all, key vocabulary, labels, icons, and symbols should be linked to, or associated with, alternate representations of their meaning (e.g., an embedded glossary or definition, a graphic equivalent, a chart or map). Idioms, archaic expressions, culturally exclusive phrases, and slang should be translated. When the syntax of a sentence or the structure of an equation or graphical representation is not obvious or familiar to learners, comprehension suffers. To ensure all learners have equal access to information, provide alternative representations that clarify, or make more explicit, the syntactic or structural relationships between elements of meaning.
+
+Pre-teach vocabulary and symbols, especially in ways that promote connection to the learners’ experience and prior knowledge.
+
+Offer graphic symbols with alternative text descriptions.
+
+Highlight how complex terms, expressions, or equations are composed of simpler words or symbols.
+
+Embed support for vocabulary and symbols within the text (e.g., hyperlinks or footnotes to definitions, explanations, illustrations, previous coverage, or translations).
+
+Embed support for unfamiliar references within the text (e.g., domain-specific notation, lesser known properties and theorems, idioms, academic language, figurative language, mathematical language, jargon, archaic language, colloquialism, and dialect).
+
+Clarify unfamiliar syntax (in language or in math formulas) or underlying structure (in diagrams, graphs, illustrations, extended expositions, or narratives) through alternatives that:
+
+Highlight structural relations or make them more explicit.
+Make connections to previously learned structures.
+Make relationships between elements explicit (e.g., highlighting the transition words in an essay, linking between ideas in a concept map, etc.).
+
+## Consideration 2.2: Support decoding of text, mathematical notation, and symbols
+
+The ability to fluently decode words, numbers, or symbols that have been presented in an encoded format (e.g., visual symbols for text, haptic symbols for Braille, algebraic expressions for relationships) takes practice for any learner, but some learners will reach automaticity more quickly than others. Learners need consistent and meaningful exposure to symbols to comprehend and use them effectively. Lack of fluency or automaticity greatly increases the cognitive load of decoding, thereby reducing the capacity for information processing and comprehension. To ensure all learners have equal access to knowledge, especially when the ability to decode is not the focus of instruction, it is important to offer options that reduce the barriers that decoding raises for learners who are unfamiliar with the symbols.
+
+Allow the use of text-to-speech.
+Use automatic voicing with digital mathematical notation (e.g., MathML).
+Use digital text with an accompanying human voice recording (e.g., DAISY Talking Books).
+Allow for flexibility and easy access to multiple representations of notation where appropriate (e.g., formulas, word problems, graphs).
+Offer clarification of notation through lists of key terms.
+
+## Consideration 2.3: Cultivate understanding and respect across languages and dialects
+  
+The language of curricular materials is usually monolingual, but often the learners in the classroom are not. As such, the promotion of cross-linguistic understanding is especially important. For new learners of the dominant language (e.g., English in U.S. schools) or for learners of academic language (the dominant discourse in school), the accessibility of information is greatly reduced when no linguistic options are available. Offering multiple representations, especially for key information or vocabulary, is an important aspect of accessibility. In addition, while one particular language might be dominant, cultivating respect across languages and dialects requires recognizing that other languages and linguistic representations are valid and valued.
+
+Offer a diverse curriculum with a variety of literary works, historical perspectives, and cultural practices from various linguistic backgrounds.
+Promote the opportunity to share cultures and backgrounds.
+Celebrate linguistic diversity to showcase languages and cultures, fostering pride and respect among peers.
+Make all key information in the dominant language also available in home or heritage languages.
+Link key vocabulary words to definitions and pronunciations in both dominant and heritage languages.
+Define domain-specific vocabulary (e.g., “map key” in social studies) using both domain-specific and common terms.
+Incorporate electronic translation tools or links to multilingual glossaries on the web.
+Embed visual, non-linguistic supports for vocabulary clarification (e.g., pictures, videos, etc.).
+Support translanguaging, the ability to move fluidly between languages, as an approach that encourages learners to use their full linguistic capital.
+Recognize and incorporate non-oral languages, such as sign languages.
+
+## Consideration 2.4: Address biases in the use of language and symbols
+
+As countries and communities become increasingly diverse, it is common for environments to include learners who speak different languages and dialects. For example, people in the United States speak more than 350 languages, and the federal government does not designate any official language. Nevertheless, it is common for academic English to be perceived as the standard language for learning in schools or work environments. As a result, a hierarchy of language emerges with standard English at the top, and those who do not speak or understand this dominant language are often perceived as having a deficit or disadvantage. It is essential to disrupt any explicit or implicit messages of inferiority for those who use other languages or dialects (e.g., Spanish, Arabic, African American Vernacular English (AAVE), American Sign Language (ASL), etc.). Countries, communities, learning environments need to consider how different languages and dialects are perceived, portrayed, and treated in their contexts. This is especially imperative given that language is intimately interwoven with a person’s culture, values, and sense of identity. Offering content through the use of multiple languages and symbols creates more entry points for learners, increases accessibility, and provides linguistically diverse learners with a sense of value and belonging.
+
+Facilitate listening and understanding of diverse languages.
+Use closed captioning and sign languages when possible.
+Use closed captioning in more than one language.
+Label classroom items in multiple languages.
+Welcome the use of multiple languages and dialects for communication, including speaking and writing.
+Recognize that the goal of learning standard languages is not assimilation or monolingualism.
+Avoid using ableist language (expressions that use terms associated with disabilities as pejoratives).
+Avoid using language and symbols associated with oppression, discrimination, or dehumanization.
+
+## Consideration 2.5: Illustrate through multiple media
+  
+Classroom materials are often dominated by information in text. But relying on text as a single mode of representation can impose barriers when presenting concepts and processes, particularly for learners who have text- or language-related disabilities or learners who communicate in languages other than the dominant language. Offering multiple representations—especially illustrations, simulations, images, videos, or interactive graphics—can make the information in text more relatable and comprehensible for any learner and accessible for some who would find it completely inaccessible in text.
+
+Present key concepts beyond representation via text (e.g., an expository text or a math equation) with another or multiple formats (e.g., an illustration, dance/movement, diagram, table, model, video, comic strip, storyboard, photograph, animation, or physical or virtual manipulative).
+Clarify links between information provided in texts and any accompanying representation of that information in illustrations, equations, charts, or diagrams.
+
+# Guideline 3: Design Options for Building Knowledge
+
+Education helps learners transform accessible information into usable knowledge and generate new understandings. Decades of cognitive science research have demonstrated that the capability to make meaning — transform accessible information into usable knowledge — is not a passive process, but an active one. Building usable knowledge, knowledge that is accessible for future decision-making, depends not upon merely perceiving information, but upon active skills like making connections, synthesizing information, asking questions, selective attending, integrating new information with prior knowledge, strategic categorization, and active memorization. Constructing usable knowledge could involve collaborative knowledge building, a process essential to making information meaningful for learners. It involves learners working together, whether they are adults or children, to co-construct knowledge. This collaboration leverages diverse perspectives and experiences, enhancing the depth and breadth of understanding. Through dialogue and shared activities, learners can challenge and refine their ideas, leading to more robust and adaptable knowledge. Research has shown that collaborative environments where students engage in shared inquiry and problem-solving foster deeper understanding and collective knowledge advancement. Individuals differ greatly in their prior knowledge, familiarity with various ways of knowing, and approaches to building knowledge. Intentional design and multiple representations of information — the responsibility of any curriculum or instructional methodology — can offer the options and scaffolds necessary to ensure all learners have access to knowledge.
+
+Prompt: How might we incorporate multiple ways for building individual and collective knowledge?
+
+## Consideration 3.1: Connect prior knowledge to new learning
+  
+Information is more accessible and likely to be understood by learners when it is presented in a way that primes, activates, or provides any prerequisite knowledge. Barriers and inequities exist when background knowledge that is unfamiliar to some learners is critical to integrating or using new information. However, there are also barriers for learners who have the necessary background knowledge, but might not know it is relevant. Those barriers can be reduced when options are available that support learners in connecting relevant prior knowledge, or link to the prerequisite information elsewhere.
+
+Anchor instruction by linking to and activating relevant prior knowledge (e.g., using visual imagery, concept anchoring, or concept mastery routines).
+Use advanced organizers (e.g., KWL methods, concept maps).
+Pre-teach critical prerequisite concepts through demonstration or models.
+Bridge concepts with relevant analogies and metaphors.
+Make explicit cross-curricular connections (e.g., teaching literacy strategies in the social studies classroom).
+
+## Consideration 3.2: Highlight and explore patterns, critical features, big ideas, and relationships
+  
+One of the big differences between experts and novices in any domain is the facility with which they distinguish what is critical from what is unimportant or irrelevant. As learners deepen their understanding, they increase their ability to distinguish what is critical and how it relates to the learning goal. They recognize the most important features in information and allocate their time efficiently, identifying what is valuable and finding the right “hooks” with which to integrate the most valuable information into existing knowledge. As a result, one of the most effective ways to make information more accessible is to use explicit cues or prompts that assist learners in attending to those features that matter most while avoiding those that matter least.
+
+Highlight or emphasize key elements in text, graphics, diagrams, or formulas.
+Use outlines, graphic organizers, unit organizer routines, concept organizer routines, and concept mastery routines to emphasize key ideas and relationships.
+Use multiple examples and non-examples to emphasize critical features.
+Use cues and prompts to draw attention to critical features.
+Highlight previously learned skills that can be used to solve unfamiliar problems.
+
+## Consideration 3.3: Cultivate multiple ways of knowing and making meaning
+  
+Equitable learning environments guide learners in the process of constructing knowledge by valuing and cultivating multiple ways of knowing and making meaning. Diverse cultural perspectives bring unique insights and methods of understanding the world. Indigenous knowledge systems, for instance, emphasize holistic and interconnected ways of knowing, which can complement and enrich Western methodologies. By incorporating and respecting these various approaches, education can become more inclusive and effective. This broad approach helps in creating a more inclusive educational environment that respects and utilizes the diverse backgrounds of every learner. Well-designed learning materials and environments incorporate multiple approaches to building knowledge, including but not limited to problem solving, storytelling, algorithms, and holistic and linear thinking. Incorporating multiple ways for meaning making, along with embedding models, scaffolds, and feedback, can assist learners in knowing how to apply different approaches and use those strategies effectively.
+
+Incorporate multiple ways of knowing, including storytelling, kinesthetics, problem solving, and relational learning through interpersonal experiences.
+Use explicit prompts for each step in a sequential process to help learners develop a logical flow specific for their understanding and create a structure of complex tasks.
+Use options for organizational methods and approaches (e.g., tables and algorithms for processing mathematical operations), supporting the various cognitive approaches and enhancing comprehension .
+Use interactive models that guide exploration and new understandings.
+Introduce graduated scaffolds that support information processing strategies.
+Provide multiple entry points to a lesson and optional pathways through content (e.g., exploring big ideas through dramatic works, arts and literature, film, and media).
+“Chunk” information into smaller elements, helping to prevent cognitive overload.
+Progressively release information (e.g., sequential highlighting).
+Remove unnecessary distractions unless they are essential to the instructional goal.
+
+## Consideration 3.4: Maximize transfer and generalization
+  
+All learners need to be able to generalize and transfer their learning to new contexts. Learners vary in the amount of scaffolding they need for memory and transfer in order to improve their ability to access their prior learning. Of course, all learners can benefit from assistance in how to transfer the information they have to other situations, as learning is not about individual facts in isolation. Learners need multiple representations for this to occur. Without this support and the use of multiple representations, information might be learned, but is inaccessible in new situations. Supports for memory, generalization, and transfer include techniques that are designed to heighten the memorability of the information, as well as those that prompt and guide learners to employ explicit strategies.
+
+Use checklists, organizers, sticky notes, and electronic reminders.
+Prompt the use of mnemonic strategies and devices (e.g., visual imagery, paraphrasing strategies, method of loci, etc.).
+Incorporate explicit opportunities for the review and practice of new concepts or skills, including social skills.
+Use templates, graphic organizers, and concept maps to support note-taking.
+Use scaffolds that connect new information to prior knowledge (e.g., word webs, half-full concept maps).
+Embed new ideas in familiar ideas and contexts (e.g., use of analogy, metaphor, drama, music, film, etc.) to make learning more relatable.
+Incorporate explicit, supported opportunities to generalize learning to new situations (e.g., different types of problems that can be solved with linear equations, using physics principles to build a playground).
+Offer opportunities over time to revisit key ideas and linkages between ideas.
+
+---
+Principle: Design Multiple Means of Action & Expression
+  
+Learners differ in the ways they navigate a learning environment, approach the learning process, and express what they know. Therefore, it is essential to design for and honor these varying forms of action and expression. For example, all individuals, including those with disabilities, approach learning tasks very differently. Depending on the context, some may prefer to express themselves in written text but not speech, and vice versa. It should also be recognized that action and expression require a great deal of strategy, practice, and organization, and this is another area in which learners will differ. In reality, there is not one means of action and expression that will be optimal for every learner; options for action and expression are essential.
+
+# Guideline 4: Design Options for Interaction
+  
+A textbook or workbook in print format provides limited means of navigation or physical interaction (e.g., turning pages, handwriting in spaces provided). Many interactive pieces of educational software similarly provide only limited means of navigation or interaction (e.g., using a mouse or keyboard). More broadly, the physical design of the learning space can also be restrictive (e.g. narrow aisles, inflexible seating and table arrangements, inflexible height of a whiteboard, etc.). Navigation and interaction in those limited ways will raise barriers for some learners—for example, learners with physical disabilities, blindness, dysgraphia, or those who need various executive functioning supports. It is important to design materials and physical environments that support and value the interaction needs and preferences of every learner. Intentionally designed curricular materials provide a seamless interface with common assistive and accessible technologies through which everyone, including individuals with disabilities, can navigate and express what they know. These tools allow navigation or interaction with a single switch, through voice-activated switches, expanded keyboards, and others. And intentionally designed physical learning environments provide the options and flexibility in the physical environment to support the interaction and navigation necessary to engage in the learning process.
+
+Prompt: How might we design materials and physical environments that ensure access and participation for every learner?
+
+## Consideration 4.1: Vary and honor the methods for response, navigation, and movement
+  
+Learners differ widely in the ways they navigate and move through the physical environment, information, and activities. To reduce barriers to learning, it is essential to embed flexibility in the means for response, navigation, and movement. And along with this flexibility comes the need to reflect on biases and assumptions regarding these different means; it is important to honor the multiplicity of ways to engage and embody the learning process.
+
+Embed flexibility in the requirements for rate, timing, speed, and range of motor action required to interact with instructional materials, physical manipulatives, and technologies.
+Offer options for physically responding or indicating selections (e.g., alternatives to marking with pen and pencil, alternatives to mouse control).
+Offer options for physically interacting with materials by hand, voice, single switch, joystick, keyboard, or adapted keyboard.
+Embed flexibility into the design of the physical space (e.g., flexible seating and positioning, lighting, etc.)
+
+## Consideration 4.2: Optimize access to accessible materials and assistive and accessible technologies and tools
+
+The use of accessible materials and assistive and accessible technologies and tools strengthens opportunities for every learner to experience access, participation, and progress in the learning process. Increasingly accessible technologies are built into the devices many learners already own and use. Similarly, it has become more common for authoring tools to include options for creating accessible content at the point of need, rather than by acquiring them from a publisher or other external source.
+
+Providing a learner with a tool is often not enough. We need to provide the support to use the tool effectively. Oftentimes, learners may need assistance in navigating through their environment (both in terms of physical space and the curriculum), and every learner should be given the opportunity to use tools that might help them meet the goal of full access and participation in the learning environment. However, significant numbers of learners with disabilities use assistive technologies for navigation, interaction, and composition on a regular basis. It is critical that instructional technologies and curricula are accessible and do not impose inadvertent barriers to the use of these assistive technologies. It is also important, however, to ensure that making a lesson physically accessible does not inadvertently reduce the challenge associated with the learning goal.
+
+Ensure navigation and interaction can be performed with a variety of tools, including keyboard, mouse, switch devices, and voice commands.
+Offer the ability to leverage alternate keyboard commands for mouse action.
+Use access to alternative keyboards (e.g., on-screen keyboards for touchscreens).
+Customize overlays for touch screens and keyboards.
+Select software that works seamlessly with keyboard alternatives.
+
+# Guideline 5: Design Options for Expression & Communication
+  
+There is no medium of expression that is equally suited for all learners or for all kinds of communication. On the contrary, there are media that seem poorly suited for some kinds of expression and for some kinds of learning. It is important to provide multiple modalities for expression to reduce communication barriers and support learners to express knowledge, ideas, and concepts in the learning environment.
+
+Prompt: How might we design learning environments that value multiple and novel modes of expression and communication, including those that have been historically deprioritized?
+
+## Consideration 5.1: Use multiple media for communication
+  
+Unless specific media and materials are critical to the goal (e.g., learning to paint specifically with oils, learning to hand write with calligraphy), it is important to welcome and encourage a variety of media for expression. Such variety reduces media-specific barriers to communication among learners with disabilities, honors forms of communication that have historically been devalued, and increases the opportunities for every learner to develop a wider range of expression in a media-rich world. For example, it is important for all learners to learn composition, not just writing, and to learn the optimal medium for any particular content of expression and audience.
+
+Compose in multiple media such as text, speech, drawing, illustration, comics, storyboards, design, film, music, storytelling, dance/movement, visual art, sculpture, or video.
+Use physical manipulatives (e.g., building blocks, 3D models, base-10 blocks).
+Use social media and interactive web tools (e.g., discussion forums, chats, web design, annotation tools, storyboards, comic strips, animation presentations).
+Solve problems using a variety of strategies.
+
+## Consideration 5.2: Use multiple tools for construction, composition, and creativity
+  
+Many schools/learning environments tend to focus on traditional tools to the exclusion of contemporary ones. Without being prompted to consider contemporary tools, educators and instructional designers often depend on the tools they’ve grown accustomed to. It is imperative to update tools to align with current contexts and innovations.
+
+For example, generative artificial intelligence (AI) has become a necessary consideration when designing learning experiences around composition. Relying upon traditional tools has several liabilities: 1) it does not prepare learners for their future; 2) it limits the range of content and teaching methods that can be implemented; 3) it restricts learners’ ability to express knowledge about content; and, most importantly, 4) it restricts the kinds of learners who can be successful.
+
+Current media tools provide a more flexible, creative, and accessible toolkit with which learners can more successfully take part in their learning and articulate what they know. Unless a goal is focused on learning to use a specific tool (e.g., learning to draw with a compass, learning a specific programming software), learning environments should embed a range of options for construction, composition, and creativity. In an environment where there is access to a variety of tools, learners can explore and learn to use tools that are an optimal match between their preferences and the goals of the task.
+
+Use spell checkers, grammar checkers, word-prediction software.
+Use speech-to-text software (voice recognition), human dictation, recording.
+Use calculators, graphing calculators, geometric sketch pads, or pre-formatted graph paper.
+Use sentence starters or sentence strips.
+Use story webs, outlining tools, or concept mapping tools.
+Use Computer-Aided-Design (CAD), music notation (writing) software, or mathematical notation software.
+Use virtual or concrete mathematics manipulatives (e.g., base-10 blocks, algebra blocks).
+Use web applications (e.g., collaborative applications, animation, presentation).
+
+## Consideration 5.3: Build fluencies with graduated support for practice and performance
+  
+As learners work to develop a variety of fluencies (e.g., visual, audio, mathematical, reading, etc.), multiple scaffolds can assist them as they explore, experiment, practice, and develop confidence. This experience of engaging in exploration, experimentation, and practice occurs when meaningful and authentic learning can take place. Instead of emphasizing the end product, the most valuable learning can take place during the process itself. Learning environments can support the development of fluencies by embedding a variety of formative assessment opportunities as well as scaffolds that can be gradually released over time. These formative assessments and scaffolds can offer flexibility in terms of scaffolds and supports depending on goals and contexts.
+
+While engaging in the process of learning itself is critical, the end product or performance can also be a meaningful way to build fluencies, be it in the form of an essay or a dramatic production or some other form of expression. Performance can offer learners the opportunity to synthesize their learning in personally relevant ways and share it with others. Overall, it is important to embed options that build learners’ fluencies for both practice and performance.
+
+Use differentiated models to emulate (e.g., models that demonstrate the same outcomes but use differing approaches, strategies, skills, etc.).
+Use differentiated mentors (e.g., teachers/tutors who use different approaches to motivate, guide, feedback, or inform).
+Use scaffolds that can be gradually released with increasing independence and skills (e.g., embedded into digital reading and writing software).
+Use differentiated feedback (e.g., feedback that is accessible because it can be customized to individual learners).
+Use multiple examples of novel solutions to authentic problems.
+
+## Consideration 5.4: Address biases related to modes of expression and communication
+  
+Too often, individual and systemic biases devalue certain forms of expression and communication and prioritize others. For example, many schools and institutions of higher education consider text-based forms of communication as more rigorous than other forms of communication; storytelling is central to Indigenous communities as a way to pass on knowledge from one generation to the next, yet oral traditions have historically been silenced or ignored; and closed captioning is often prioritized over sign languages. Honoring and valuing multiple forms of expression and communication is critical to designing inclusive and equitable learning environments.
+
+Anticipate and explore how bias can influence the modes of expression and communication that are offered.
+Anticipate and explore how bias can influence the ways modes of expression and communication are selected.
+Communicate in multiple ways how modes of expression that align with the goal are equally valued.
+
+# Guideline 6: Design Options for Strategy Development
+  
+A critical aspect of learning is the capacity to act skillfully and purposefully, or to demonstrate “executive functions.” One component of executive function as it relates to the strategic networks is strategy development. Strategic networks include the prefrontal cortex and are interconnected with networks that impact affect and recognition. These capabilities connected to the strategic networks allow humans to become intentional in their short-term reactions to their environment and to set long-term goals and plan effective strategies for reaching those goals. These practices include monitoring progress and modifying strategies as needed. In short, they support learners to use the resources and tools available to make the most out of learning.
+
+The UDL framework typically involves efforts to expand executive capacity in two ways: 1) by scaffolding lower level skills so they require less executive processing; and 2) by scaffolding higher level executive skills and strategies so they are more effective and developed. Previous guidelines have addressed accessibility supports and scaffolding. This guideline addresses ways to provide scaffolding for executive functions themselves.
+
+## Consideration 6.1: Set meaningful goals
+  
+Setting meaningful goals that are both challenging and motivating is a critical part of the learning process. It is important to set goals that are big enough to capture the vision and complexity of what is being learned, but are specific enough to be clear, objective, and measurable. Articulating a goal helps to develop a plan to achieve it and to identify the tools or resources that will best support the learning along the way. Knowing the goal helps to monitor progress, recognize when to shift strategies or direction, and to give meaningful feedback.
+
+Use prompts and scaffolds to estimate effort, resources, and challenge.
+Use models or examples of the process and product of goal-setting.
+Use guides and checklists for scaffolding goal-setting.
+Post goals, objectives, and schedules in an obvious place.
+
+## Consideration 6.2: Anticipate and plan for challenges
+  
+Once a goal is set, it is important to create time and space to plan a strategy, identify useful tools, and anticipate the challenges that may surface along the way. This proactive planning can reduce barriers and ensure more individuals have the opportunity to reach their goals.
+
+Use reflection prompts to anticipate challenges and encourage strategic planning.
+Use prompts to “show and explain your work” (e.g., portfolio review, art critiques).
+Use checklists and project planning templates for understanding the goal and setting up prioritization, sequences, and schedules of steps.
+Use coaches or mentors that model think-alouds of the process.
+Use guides for breaking long-term goals into reachable short-term objectives.
+
+## Consideration 6.3: Organize information and resources
+
+Working memory can be conceptualized as a “scratch pad” for maintaining chunks of information to access as part of building knowledge and problem-solving. Wherever working memory capacity is not construct-relevant, it is important to draw from a variety of scaffolds and organizational aids to keep information organized and “in mind.”
+
+Use graphic organizers and templates for data collection and organizing information.
+Use prompts for categorizing, systematizing, and discovering themes and patterns.
+Use checklists and guides for note-taking.
+
+## Consideration 6.4: Enhance capacity for monitoring progress
+  
+Learning cannot happen without feedback, and that means learners need a clear understanding of the progress that is being made toward the learning goal. Generating multiple and varied forms of feedback throughout the learning process is essential to supporting learners’ growth. It is important to ensure these multiple and varied forms of feedback are explicitly connected to the learning goal and are explicit, timely, informative, accessible, and customizable. Especially important is providing “formative” feedback that supports learners to monitor their own progress effectively and to use that information to guide their own effort and practice.
+
+Use prompts to guide self-monitoring and reflection.
+Use representations of progress (e.g., before-and-after photos, graphs and charts showing progress over time, process portfolios).
+Explore the different types of feedback that are most useful according to specific preferences, goals, and contexts.
+Use templates that guide self-reflection on quality and completeness.
+Use differentiated models of self-assessment strategies (e.g., role-playing, video reviews, peer feedback).
+Use checklists, rubrics, models, and examples.
+
+## Consideration 6.5: Challenge exclusionary practices
+  
+Deep-seated biases and systems of discrimination have led to the exclusion of historically marginalized learners across societies and around the globe. It is imperative to create structures to learn from learners’ lived experiences in order to surface exclusionary practices–as well as to address them.
+
+Create time for regular community sessions and individual reflection sessions.
+Work as individuals and as communities to name, explore, and address exclusionary practices.
+Work as individuals and as communities to develop concrete and specific actions for addressing exclusionary practices and building inclusive communities.
+When an exclusionary practice is uncovered, provide opportunities for healing using community-based practices such as restorative justice.
+
+
+---
+Principle: Design Multiple Means of Engagement
+  
+Affect represents a crucial element to the learning process, and learners differ markedly in what sparks their motivation and enthusiasm for learning. Learners must be able to bring their authentic selves to the learning environment and find connections to what matters most in their lives. The UDL framework emphasizes the idea of learner variability, and learners’ multiple and intersecting identities are an essential layer of fully recognizing the notion of learner variability. While we emphasize dimensions of identity as a part of variability in this section on Multiple Means of Engagement, the essential role identity plays in learning is woven across all three UDL principles. Further, learners' interests and sources of motivation may vary depending on the context. Some learners may be highly engaged by spontaneity and novelty while others are disengaged, even frightened, by those aspects, preferring strict routine. Some learners might like to work alone, while others prefer to work with their peers. And, these preferences might vary from week to week or even day to day. In reality, there is not one means of engagement that will be optimal for all learners in all contexts; multiple options for engagement are essential.
+
+
+# Guideline 7: Design Options for Welcoming Interests & Identities
+  
+To spark engagement in the learning process, learners’ unique interests as well as their unique identities, including intersecting dimensions such as race/ethnicity, culture, gender, language, and disability, must be recognized, sustained, and valued. It is essential to acknowledge the remarkable variability in what attracts and engages learners’ interests and what constitutes an environment that affirms the dignity of every learner. Even the same learner will differ over time and circumstance. Their interests change as they develop and gain new knowledge and skills, and their connections to different dimensions of their identities may change as well. Creating a learning environment that welcomes learners’ whole selves is a critical step to ensuring learners are able to access and engage with the learning process.
+
+## Consideration 7.1: Optimize choice and autonomy
+  
+Embedding authentic choices that align with learning goals can be a meaningful way to enhance learner engagement. Depending upon the learning goal, choices can be offered in how the goal can be pursued, such as the context for achieving the goal or the tools or supports available. Offering learners choices can develop agency, pride in accomplishment, and increase connection to their learning. However, it is important to note that individuals differ in how much and what kind of choices they prefer to have. It is therefore not enough to simply provide choice. Options for choice and autonomy must be optimized to ensure engagement.
+
+Embed choices that align with the learning goal, such as:
+
+The content to explore
+The tools used for exploration or production
+The type of rewards or recognition available
+The opportunities for practicing and assessing learning
+The design or graphics of layouts, etc.
+The sequence or timing for completion of tasks
+Use a collaborative approach among learners and educators to co-design learning goals, activities, and tasks.
+
+## Consideration 7.2: Optimize relevance, value, and authenticity
+  
+Individuals are engaged by content and activities that are relevant and valuable to their interests, goals, and communities. This does not necessarily mean the situation has to be equivalent to real life, as fiction can be just as engaging to learners as non-fiction. It does, however, have to be relevant and authentic to learners’ individual and/or community goals and the instructional goals. Individuals are rarely interested in information and activities that have no relevance or value. In an educational setting, one of the most important ways educators recruit interest is to highlight the utility and relevance of learning and to demonstrate relevance through authentic, meaningful activities. It is a mistake, of course, to assume all learners will find the same activities or information equally relevant or valuable to their goals. To recruit all learners equally, it is critical to provide options that optimize what is relevant, valuable, and meaningful to the learner.
+
+Vary activities and sources of information so they can be:
+
+Personalized and contextualized to learners’ lives
+Culturally relevant and sustaining
+Socially relevant
+Age and ability appropriate
+Appropriate for different racial, cultural, ethnic, and gender groups
+Design activities so learning outcomes are authentic, communicate to real audiences, and reflect a purpose that is clear to the participants.
+
+Provide tasks that allow for active participation, exploration, and experimentation.
+
+Invite personal response, evaluation, and self-reflection to content and activities.
+
+Include activities that foster the use of imagination to solve novel and relevant problems, or make sense of complex ideas in creative ways.
+
+## Consideration 7.3: Nurture joy and play
+  
+Learning environments that spark joy and nurture opportunities for play are central to the learning process. Play supports the learning and development of learners of all ages — from young children to adults. Engaging in play can spark curiosity, wonder, and imagination as learners construct new understandings and develop relationships. These acts of playfulness can lead learners to experience a sense of joy that adds to the engagement in the learning process, from early childhood through adulthood. Further, for historically marginalized learners, finding a sense of joy can serve as an act of resistance to oppressive systems. For example, the notion of Black Joy centers ideas of freedom, imagination, community, and love. Yet, not all learners experience joy and play in the same ways, and even the same learner isn’t going to find joy in the same way every time. A UDL lens reminds us of the variability of every learner and the importance of embedding options and flexibility into the learning environment to support learners to find their own joy.
+
+Nurture playfulness in a variety of forms including, but not limited to, outdoor play, sensory play, imaginative play, and play through the arts.
+Incorporate opportunities for exploration, experimentation, and discovery.
+Create space for learners to find joy through connections to their identities, sense of self, and communities.
+Create space for learners to take pride in their accomplishments.
+Incorporate storytelling.
+
+## Consideration 7.4: Address biases, threats, and distractions
+  
+One of the most important things an educator can do is to create an accepting and supportive space for learners, in which they feel valued, supported, agentic, and encouraged to take risks, form their own opinions, and engage in dialogue. To do this, educators need to address potential biases, threats, and distractions in the learning environment, both overt and subtle. When learners have to focus their attention on having basic needs met or avoiding a negative or oppressive experience, they cannot engage with the learning process. While the physical safety of a learning environment is of course necessary, subtler types of threats and distractions must be attended to as well. What is threatening or potentially distracting depends on learners’ individual needs and backgrounds. The optimal instructional environment offers options that reduce threats and negative distractions to create a space in which learning can occur.
+
+Create an accepting and supportive learning culture by:
+
+Exploring how educator and learner biases can impact the learning environment
+Creating space and ways for learners to share the biases, threats, and distractions they may be experiencing
+Nurturing a culture where mistakes are a part of the learning process
+Vary the level of novelty or risk through:
+
+Charts, calendars, schedules, visible timers, cues, etc., that can increase the predictability of daily activities and transitions
+Creation of class routines
+Alerts and previews that can help learners anticipate and prepare for changes in activities, schedules, and novel events
+Options that can, in contrast to the above, maximize the unexpected, surprising, or novel in highly routinized activities
+Vary the level of sensory stimulation through:
+
+Variation in the presence of background noise or visual stimulation, noise buffers, number of features or items presented at a time
+Variation in pace of work, length of work sessions, availability of breaks or time-outs, or timing or sequence of activities
+Vary the social demands required for learning or performance, the perceived level of support and protection, and the requirements for public display and evaluation.
+
+Acknowledge negative experiences within learning environments and take steps such as shared agreements or self regulation options to make learners comfortable.
+
+# Guideline 8: Design Options for Sustaining Effort & Persistence
+  
+Learning is an ongoing process that oftentimes requires sustained effort and determination. Learners are highly variable in terms of the ways they are inspired to persist through challenging aspects of the learning process, and this variability can shift depending on the learning context. To sustain effort and persistence, effective learning designs consider options for creating goals that are meaningful and purposeful, offering scaffolds and supports in service of challenging goals, fostering collaboration and belonging, and offering on-going, action-oriented feedback. These external designs in the environment can support individual learners and communities of learners to connect with the learning process and feel inspired to work toward learning goals.
+
+## Consideration 8.1: Clarify the meaning and purpose of goals
+  
+Over the course of any sustained project or practice, there are many sources of interest and engagement that compete for attention and effort. To support sustained effort and persistence, it is essential for learners to be clear on the goal and to have space to explore how the goal is meaningful to their own lives and communities. Further, it is important the meaning and purpose of the goal is clearly and consistently reinforced and apparent to learners throughout the learning process.
+
+Explicitly formulate or restate the goal.
+Display the goal in multiple ways.
+Encourage organization of long-term goals into short-term objectives.
+Use prompts or scaffolds for imagining desired outcomes.
+Co-construct ideals of excellence and generate relevant examples that connect to learners’ cultural backgrounds, identities, and interests.
+
+## Consideration 8.2: Optimize challenge and support
+  
+The UDL framework is grounded in a belief in the brilliance of every learner and the importance of setting high expectations. The design of the learning environment must not only support access, but support participation and progress toward challenging learning goals as well. All learners need to be challenged, but not always in the same way. It is important for the learning environment to embed a variety of tools, resources, and supports to promote successful engagement with the learning goal and to ensure learners find challenges that are optimally motivating. Balancing the resources available to meet the challenge is vital, as productive struggle is a key component of an engaging and rigorous learning experience.
+
+Presume competence and nurture a belief in the capabilities of every learner.
+Offer options with varying modes of complexity or difficulty.
+Offer options for tools and scaffolds that align with the learning goal and promote agency.
+Emphasize process, effort, and progress in meeting standards as alternatives to external evaluation and competition.
+
+## Consideration 8.3: Foster collaboration, interdependence, and collective learning
+  
+Collectively generating knowledge and learning from one another’s diversity of ideas, perspectives, and lived experiences is central to the learning process. Creating communities, teams, and partnerships that can push and extend each other’s thinking and practice care for one another is a powerful way to sustain effort and persistence, and to support learners to thrive more broadly. Connected to these notions of collaboration and collective learning is the idea of interdependence — a reminder that we are all interconnected, our decisions and actions impact others, and learners can support one another. The disability community reminds us of the value of interdependence as opposed to an overemphasis on independence. We can work to support each other to ensure needs are met within the learning environment, and more broadly.
+
+Create community agreements that emphasize learners’ ideas for fostering collaboration, interdependence, and collective learning.
+Create teams with clear goals, roles, expectations, and responsibilities.
+Use prompts that guide learners in when and how to ask for help.
+Use prompts or protocols that guide learners to surface and share differing perspectives.
+Encourage and support opportunities for peer interactions and supports (e.g., peer tutors).
+Construct communities of learners engaged in common interests or activities or who identify in similar ways.
+Construct communities of learners engaged in differing interests or activities or who identify in differing ways.
+Encourage questions to more fully understand concepts, ideas, and perspectives.
+
+## Consideration 8.4: Foster belonging and community
+  
+To support learners to sustain effort and persistence — and to thrive as learners more broadly — it is critical to design learning environments where learners feel a legitimate sense of belonging and community. Fostering this legitimate sense of belonging and community is especially important for learners who have been historically excluded and/or marginalized. Further, it is important to remember the sources and meanings of belonging and community will vary across learners and contexts. Designing learning environments where there are multiple ways to develop relationships, practice caring for one another, and strengthen connections to learners' multiple and intersecting identities is essential.
+
+Create opportunities for learners to share their perspectives on what belonging and community can feel like and look like.
+Create opportunities for learners to share their ideas for different ways to foster belonging and community.
+Welcome interests and identities. (Guideline 7)
+Examine when or how bias may be creating barriers to learners’ sense of belonging.
+
+## Consideration 8.5: Offer action-oriented feedback
+  
+Assessment is most productive for sustaining engagement when the feedback is relevant, constructive, accessible, consequential, and timely. But the type of feedback is also critical in helping learners to sustain the motivation and effort essential to learning. Action-oriented feedback is the type of feedback that offers specific comments on ways to make progress and take action toward the learning goal. This type of feedback emphasizes the role of effort and practice rather than “intelligence” or inherent “ability” as an important factor in guiding learners toward successful long-term habits of mind and learning practices.
+
+Offer feedback that encourages perseverance, focuses on development of efficacy and self-awareness, and encourages the use of specific supports and strategies in the face of challenge.
+Offer feedback that emphasizes effort, improvement, and achieving a goal rather than on relative performance.
+Offer feedback that is frequent, timely, and specific.
+Offer feedback that is substantive and informative rather than comparative or competitive.
+Offer feedback that models how to incorporate reflection, including identifying patterns of challenges or strengths, into positive strategies for future success.
+Offer feedback that encourages risk taking and offers another (or differing) perspective(s).
+
+# Guideline 9: Design Options for Emotional Capacity
+  
+A critical aspect of human development is attending to one’s abilities to recognize emotions, manage thoughts and behaviors, and empathize with others. An emotional response does not preclude rational thinking; emotions are part of the human experience. Effective learning environments develop learners’ intrinsic abilities to regulate their own emotions and choose how to move forward in service of their learning. While many individuals develop regulatory skills and practices on their own, either by trial and error or by observing successful adults, many others can benefit from more explicit supports.
+
+Unfortunately, some learning environments do not address these skills and practices explicitly, leaving them as part of the “implicit” curriculum that is often inaccessible to many. Those educators and settings that develop emotional capacity explicitly will be most successful in applying the UDL principles through modeling and prompting in a variety of methods. As in other kinds of learning, individual differences are more likely than uniformity. A successful approach requires providing sufficient options to support variability among learners. While it is imperative for learners to develop coping strategies, the design of the learning environment should not require learners to cope with inequitable conditions.
+
+How might we design learning environments that support and extend emotional capacity while honoring variability among learners?
+
+## Consideration 9.1: Recognize expectations, beliefs, and motivations
+  
+One important aspect of growing emotional capacity is the personal knowledge each learner has about what they find motivating, be it intrinsic or extrinsic. To accomplish this, learners can set personal goals that can be realistically reached, as well as foster positive beliefs that their goals can be met. However, learners also need to be supported to deal with frustration and anxiety when they are in the process of meeting their goals. Multiple options can be embedded into the learning environment to support learners to find inspiration in the learning process and to develop confidence in themselves as learners.
+
+Use prompts, reminders, guides, rubrics, and checklists that focus on:
+
+Setting regulatory goals like managing anxiety in response to challenge
+Increasing the length of on-task orientation in the face of distractions
+Elevating the frequency of self-reflection
+Provide coaches, mentors, or agents that model the process of setting personally appropriate goals that take into account both strengths and weaknesses.
+
+Support activities that encourage self-reflection and appreciation of one’s strengths in order to build confidence.
+
+Examine the explicit and implicit expectations set by the environment and consider how bias may create barriers, such as low expectations or expecting every learner to demonstrate engagement in the same way.
+
+## Consideration 9.2: Develop awareness of self and others
+
+Providing a model of regulatory skills and practices is not sufficient for most learners. Opportunities for learners to process their emotions and reflect on their strengths and challenges are essential. Reminders, models, and checklists can assist learners in choosing and trying an adaptive strategy for managing and directing their emotional responses to external events (e.g., strategies for coping with anxiety-producing social settings or for reducing task-irrelevant distractors) or internal events (e.g., strategies for decreasing rumination on depressive or anxiety-producing ideation). In addition, scaffolds may be provided to develop and support social awareness, or the ability to understand the perspectives of others, including people from different backgrounds and cultures. Such scaffolds should provide sufficient options to honor the variability and cultivate identity-safe spaces for every learner.
+
+Use differentiated models, scaffolds, and feedback for:
+
+Managing frustration
+Seeking external emotional support
+Developing internal controls and coping skills
+Appropriately handling subject-specific phobias and judgments of “natural” aptitude (e.g., “How can I improve on the areas I am struggling in?” rather than “I am not good at math.”)
+Use real life situations or simulations to demonstrate coping skills.
+
+Create opportunities for learners to reflect on social interactions.
+
+Create opportunities for learners to appreciate their personal, cultural, and linguistic assets and the assets of others (e.g., displaying learner-created self-portraits, creating spaces for affinity groups, sharing notes of appreciation with peers and colleagues).
+
+## Consideration 9.3: Promote individual and collective reflection
+  
+Creating opportunities for individual and collective reflection is a key way to develop emotional capacity. A UDL lens reminds us of the remarkable variability of learners when it comes to metacognition. Some learners will have a heightened awareness of their progress toward goals and how to learn from mistakes along the way, while other learners can benefit from more explicit instruction and modeling. For many learners, merely recognizing they are making progress toward a goal is highly motivating. Alternatively, one of the key factors in losing motivation is when learners aren’t supported to recognize individual or collective progress. It is important that learners have multiple models and scaffolds of different self- and group-assessment techniques so they can identify and choose ones that are optimal.
+
+Use devices, aids, or charts to assist individuals and groups in learning to collect, chart, and display data from their own progress for the purpose of reflection and monitoring progress.
+Use activities that include a means by which learners get feedback and have access to alternative scaffolds (e.g., charts, templates, feedback displays) that support understanding progress in a manner that is understandable and timely.
+Adopt protocols that promote individual and collective reflection.
+
+## Consideration 9.4: Cultivate empathy and restorative practices
+  
+Empathy is an essential component for co-designing equitable learning environments. Human beings naturally feel a sense of empathy toward others with whom they identify or have a common experience. Additional care and awareness are required to cultivate a sense of empathy with those who may appear different or come from different backgrounds. Activities that invite listening to and considering perspectives other than one’s own, building communication skills, and offering content that authentically represents a diversity of lived experiences can help expand learners’ empathy for one another.
+
+Empathy has the potential to build and sustain a caring learning community. This attention to others’ experiences and perspectives strengthens the communal bonds within a learning environment, creating a space in which learners feel safe taking risks and collaborative learning can take place.
+
+Sometimes, trust is broken when care is not extended toward others. This may not be intentional, as sometimes we are not aware of how our actions impact others. While it can be challenging for some to confront these situations, restorative practices are a powerful vehicle for repair. Rather than punishing learners for mistakes, restorative practices allow for learners to consider the impact of their actions and design an appropriate response to repair trust in the community. Empathy is a key component to restorative practices, as learners practice identifying with the perspective of others, understand the difference between intent and impact, and seek to make the learning community whole.
+
+Use a strategy such as circle practice (a protocol where learners share about their emotions and experiences by passing a talking stick and responding one by one) or an emotions check-in to encourage learners to learn from one another’s perspectives.
+Facilitate learners sharing coping strategies or coping needs to encourage learners to take care of one another.
+Institute protocols such as a “buddy bench” or an accountability partner to encourage communal responsibility for the learning community.
+Co-create and facilitate classroom agreements. Specifically ask learners to add to the agreements the things they need to feel safe in the classroom.
+Create kind and equitable tools, processes, and protocols for learners to hold one another accountable to community agreements in classrooms, workplace settings, and other learning environments.
+Use a protocol such as circle practice to make communal decisions about how to restore the community after an agreement has been broken. These protocols can span primary through adult learner settings.
+
