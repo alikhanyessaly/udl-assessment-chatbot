@@ -708,100 +708,8 @@
 
             // Mode selection function
             function selectMode(mode) {
-                const chatMessages = document.getElementById('chatMessages');
-                const messageInput = document.getElementById('messageInput');
-                
-                if (mode === 'design') {
-                    // Show design mode content
-                    chatMessages.innerHTML = `
-                        <div class="welcome-message">
-                            <h2>🎨 Design UDL Assessments</h2>
-                            <p>I'll help you create inclusive assessments with multiple options and rubrics.</p>
-                            
-                            <div class="udl-principles">
-                                <div class="principle-card">
-                                    <h4><i class="fas fa-route"></i> How It Works</h4>
-                                    <p><strong>Step 1:</strong> Share your learning objectives<br>
-                                    <strong>Step 2:</strong> Answer a few quick questions about your context<br>
-                                    <strong>Step 3:</strong> Get multiple assessment options + common rubric</p>
-                                </div>
-                                <div class="principle-card">
-                                    <h4><i class="fas fa-universal-access"></i> UDL Benefits</h4>
-                                    <p>• Multiple ways for students to demonstrate learning<br>
-                                    • Accessibility built-in from the start<br>
-                                    • Cultural responsiveness and inclusion<br>
-                                    • One rubric that works across all options</p>
-                                </div>
-                            </div>
-
-                            <div class="examples-section">
-                                <h3 style="margin-bottom: 15px; color: #374151; font-size: 1.1rem; text-align: center;">
-                                    <i class="fas fa-lightbulb"></i> Try These Examples
-                                </h3>
-                                <div class="quick-actions">
-                                    <div class="quick-action" onclick="sendQuickMessage('My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade')">
-                                        <i class="fas fa-seedling"></i> Biology
-                                    </div>
-                                    <div class="quick-action" onclick="sendQuickMessage('Students need to solve linear equations, graph solutions, and explain their mathematical reasoning. Subject is Mathematics, grade level is 9th grade')">
-                                        <i class="fas fa-calculator"></i> Math
-                                    </div>
-                                    <div class="quick-action" onclick="sendQuickMessage('My students should analyze historical causes of World War II, evaluate primary sources, and present findings. Subject is History, grade level is 10th grade')">
-                                        <i class="fas fa-scroll"></i> History
-                                    </div>
-                                    <div class="quick-action" onclick="sendQuickMessage('Students will write persuasive essays, analyze literary themes, and present oral arguments. Subject is English Language Arts, grade level is 7th grade')">
-                                        <i class="fas fa-book"></i> English
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
-                                <i class="fas fa-info-circle"></i> 
-                                <strong>Ready to start?</strong> Simply share your learning objectives in your own words, and I'll guide you through the rest!
-                            </p>
-                        </div>
-                    `;
-                    messageInput.placeholder = "Share your learning objectives to get started...";
-                } else if (mode === 'evaluate') {
-                    // Show evaluation mode content
-                    chatMessages.innerHTML = `
-                        <div class="welcome-message">
-                            <h2>🔍 Evaluate Assessment</h2>
-                            <p>I'll analyze your existing assessment against UDL principles and provide improvement suggestions.</p>
-                            
-                            <div class="udl-principles">
-                                <div class="principle-card">
-                                    <h4><i class="fas fa-search"></i> What I'll Analyze</h4>
-                                    <p>• Identify barriers to accessibility and inclusion<br>
-                                    • Check cognitive load and equity considerations<br>
-                                    • Evaluate multiple means of expression<br>
-                                    • Provide specific improvement suggestions</p>
-                                </div>
-                                <div class="principle-card">
-                                    <h4><i class="fas fa-clipboard-check"></i> Evaluation Report</h4>
-                                    <p>• Strengths of your current assessment<br>
-                                    • Specific barriers identified<br>
-                                    • UDL-aligned improvement suggestions<br>
-                                    • Clear explanations of UDL rationale</p>
-                                </div>
-                            </div>
-                            
-                            <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
-                                <i class="fas fa-info-circle"></i> 
-                                <strong>Ready to evaluate?</strong> Share your assessment (questions, instructions, rubric, etc.) and I'll provide detailed UDL analysis!
-                            </p>
-                        </div>
-                    `;
-                    messageInput.placeholder = "Share your assessment content for UDL evaluation...";
-                }
-                
-                // Clear any existing messages
-                chatMessages.querySelectorAll('.message').forEach(msg => msg.remove());
-                
-                // Reset session
-                sessionToken = null;
-                localStorage.removeItem('udl_chat_session_token');
-                sessionInfo.textContent = 'New Session';
-                messageCount = 0;
+                // Simply send the mode selection to the backend
+                sendMessage(mode);
             }
 
             // Make functions available globally
@@ -877,47 +785,6 @@
                                     <p>Analyze existing assessments for UDL compliance and improvement suggestions</p>
                                 </div>
                             </div>
-                        
-                        <div class="udl-principles">
-                            <div class="principle-card">
-                                <h4><i class="fas fa-route"></i> How It Works</h4>
-                                <p><strong>Step 1:</strong> Share your learning objectives<br>
-                                <strong>Step 2:</strong> Answer a few quick questions about your context<br>
-                                <strong>Step 3:</strong> Get multiple assessment options + common rubric</p>
-                            </div>
-                            <div class="principle-card">
-                                <h4><i class="fas fa-universal-access"></i> UDL Benefits</h4>
-                                <p>• Multiple ways for students to demonstrate learning<br>
-                                • Accessibility built-in from the start<br>
-                                • Cultural responsiveness and inclusion<br>
-                                • One rubric that works across all options</p>
-                            </div>
-                        </div>
-
-                        <div class="examples-section">
-                            <h3 style="margin-bottom: 15px; color: #374151; font-size: 1.1rem; text-align: center;">
-                                <i class="fas fa-lightbulb"></i> Try These Examples
-                            </h3>
-                            <div class="quick-actions">
-                                <div class="quick-action" onclick="sendQuickMessage('My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade')">
-                                    <i class="fas fa-seedling"></i> Biology
-                                </div>
-                                <div class="quick-action" onclick="sendQuickMessage('Students need to solve linear equations, graph solutions, and explain their mathematical reasoning. Subject is Mathematics, grade level is 9th grade')">
-                                    <i class="fas fa-calculator"></i> Math
-                                </div>
-                                <div class="quick-action" onclick="sendQuickMessage('My students should analyze historical causes of World War II, evaluate primary sources, and present findings. Subject is History, grade level is 10th grade')">
-                                    <i class="fas fa-scroll"></i> History
-                                </div>
-                                <div class="quick-action" onclick="sendQuickMessage('Students will write persuasive essays, analyze literary themes, and present oral arguments. Subject is English Language Arts, grade level is 7th grade')">
-                                    <i class="fas fa-book"></i> English
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
-                            <i class="fas fa-info-circle"></i> 
-                            <strong>Ready to start?</strong> Simply share your learning objectives in your own words, and I'll guide you through the rest!
-                        </p>
                     </div>
                 `;
             }

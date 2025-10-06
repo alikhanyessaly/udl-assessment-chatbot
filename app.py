@@ -642,38 +642,90 @@ def chat():
         # Handle conversation flow based on current state
         response_content = ""
         
-        if conversation_state == "waiting_for_mode_selection":
-            # Handle mode selection
-            if "design" in message.lower() or "create" in message.lower() or "new assessment" in message.lower():
-                session['mode'] = 'design'
-                session['conversation_state'] = "waiting_for_objectives"
-                response_content = """# Design Mode Selected 🎨
+        # Check for mode switching first (works from any state)
+        if (message.lower().strip() == "design" or 
+            "switch to design" in message.lower() or
+            "create new assessment" in message.lower()):
+            # Switch to design mode
+            session['mode'] = 'design'
+            session['conversation_state'] = "waiting_for_objectives"
+            session['context'] = {
+                "learning_objectives": None,
+                "grade_level": None,
+                "subject": None,
+                "formal_curriculum": None,
+                "curriculum_provided": False,
+                "assessment_content": None
+            }
+            response_content = """# Design Mode Selected 🎨
 
 Great! I'll help you create new UDL-aligned assessments.
 
-Please share your learning objectives, subject, and grade level to get started.
+## 🚀 How It Works
+- **Step 1:** Share your learning objectives
+- **Step 2:** Answer a few quick questions about your context  
+- **Step 3:** Get multiple assessment options + common rubric
+
+## ✨ UDL Benefits
+- Multiple ways for students to demonstrate learning
+- Accessibility built-in from the start
+- Cultural responsiveness and inclusion
+- One rubric that works across all options
+
+## 💡 Try These Examples
+Click any button below to get started:
+
+**🎨 Biology** - Photosynthesis assessment options
+**🧮 Math** - Linear equations with multiple formats
+**📜 History** - World War II analysis projects
+**📚 English** - Persuasive writing with choices
 
 **Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade"
 
 Ready to design some inclusive assessments! 🚀"""
-            
-            elif "evaluate" in message.lower() or "analyze" in message.lower() or "review" in message.lower():
-                session['mode'] = 'evaluate'
-                session['conversation_state'] = "waiting_for_assessment"
-                response_content = """# Evaluation Mode Selected 🔍
+        
+        elif (message.lower().strip() == "evaluate" or 
+              "switch to evaluate" in message.lower() or
+              "analyze assessment" in message.lower()):
+            # Switch to evaluation mode
+            session['mode'] = 'evaluate'
+            session['conversation_state'] = "waiting_for_assessment"
+            session['context'] = {
+                "learning_objectives": None,
+                "grade_level": None,
+                "subject": None,
+                "formal_curriculum": None,
+                "curriculum_provided": False,
+                "assessment_content": None
+            }
+            response_content = """# Evaluation Mode Selected 🔍
 
 Perfect! I'll analyze your existing assessment against UDL principles.
 
-Please share your assessment content (questions, instructions, rubric, etc.) and I'll provide detailed feedback including:
-- Strengths and barriers identified
-- UDL compliance analysis
-- Specific improvement suggestions
-- Cultural responsiveness recommendations
+## 🔍 What I'll Analyze
+- Identify barriers to accessibility and inclusion
+- Check cognitive load and equity considerations  
+- Evaluate multiple means of expression
+- Provide specific improvement suggestions
+
+## 📊 Evaluation Report Will Include
+- Strengths of your current assessment
+- Specific barriers identified
+- UDL-aligned improvement suggestions
+- Clear explanations of UDL rationale
+
+## 💡 Try This Example
+Click the button below to test the evaluation:
+
+<button onclick="sendQuickMessage('ASSESSMENT: Write a 5-paragraph essay about the causes of World War II. Include an introduction, three body paragraphs with supporting evidence, and a conclusion. Use proper grammar and spelling. Due in 2 weeks. RUBRIC: Introduction (25%), Body paragraphs (50%), Conclusion (15%), Grammar/Spelling (10%)')" style="background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">📜 Sample Essay Assessment</button>
+
+**Ready to evaluate?** Share your assessment (questions, instructions, rubric, etc.) and I'll provide detailed UDL analysis!
 
 Ready to evaluate your assessment! 📋"""
-            
-            else:
-                response_content = """# Choose Your Mode
+        
+        elif conversation_state == "waiting_for_mode_selection":
+            # Handle mode selection (fallback for when mode switching keywords aren't detected)
+            response_content = """# Choose Your Mode
 
 Please select how you'd like to work with me:
 
@@ -836,6 +888,11 @@ Your UDL assessment design session is complete. You now have multiple assessment
 
 To start a new assessment design session, simply share your new learning objectives and I'll guide you through the process again.
 
+## 💡 Try Another Example
+Click the button below to design assessments for a different subject:
+
+<button onclick="sendQuickMessage('My learning objectives are for students to understand the water cycle, identify different types of clouds, and explain weather patterns. Subject is Earth Science, grade level is 6th grade')" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">🌧️ Water Cycle Assessment</button>
+
 **Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others."
 
 Ready for your next lesson's assessments? 🚀"""
@@ -847,6 +904,11 @@ Ready for your next lesson's assessments? 🚀"""
 This session is complete! You have your UDL assessment options and rubric.
 
 To start a new assessment design session, simply share your new learning objectives and I'll guide you through the process again.
+
+## 💡 Try Another Example
+Click the button below to design assessments for a different subject:
+
+<button onclick="sendQuickMessage('My learning objectives are for students to understand the water cycle, identify different types of clouds, and explain weather patterns. Subject is Earth Science, grade level is 6th grade')" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">🌧️ Water Cycle Assessment</button>
 
 **Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others."
 
