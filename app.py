@@ -170,12 +170,8 @@ def get_or_create_session(session_token):
                 "learning_objectives": None,
                 "grade_level": None,
                 "subject": None,
-                "class_size": None,
-                "time_constraints": None,
-                "student_needs": None,
-                "cultural_context": None,
-                "technology_access": None,
-                "assessment_preferences": None
+                "formal_curriculum": None,
+                "curriculum_provided": False
             },
             "created_at": datetime.now().isoformat(),
             "last_activity": datetime.now().isoformat()
@@ -324,71 +320,48 @@ def process_objectives_input(session, user_message):
     except Exception as e:
         return f"Error processing objectives: {str(e)}"
 
-def generate_clarifying_questions(session):
-    """Generate contextual clarifying questions based on gathered information"""
+def check_if_curriculum_needed(session):
+    """Check if we need to ask about formal curriculum"""
     context = session["context"]
     
-    # Build context summary
-    context_summary = f"""
-    Current context:
-    - Learning Objectives: {context['learning_objectives'] or 'Not provided'}
-    - Subject: {context['subject'] or 'Not specified'}
-    - Grade Level: {context['grade_level'] or 'Not specified'}
-    - Class Size: {context['class_size'] or 'Not specified'}
-    - Time Constraints: {context['time_constraints'] or 'Not specified'}
-    - Student Needs: {context['student_needs'] or 'Not specified'}
-    - Cultural Context: {context['cultural_context'] or 'Not specified'}
-    - Technology Access: {context['technology_access'] or 'Not specified'}
-    - Assessment Preferences: {context['assessment_preferences'] or 'Not specified'}
-    """
+    # Check if we have the essential information
+    has_objectives = bool(context['learning_objectives'])
+    has_subject = bool(context['subject'])
+    has_grade = bool(context['grade_level'])
     
-    user_prompt = f"""
-    Based on the current context, generate ONE short, focused clarifying question to help create better UDL assessments.
-    Focus on the most important missing information for designing inclusive assessments.
-    
-    {context_summary}
-    
-    Generate a question that:
-    1. Addresses the biggest gap in the context above
-    2. Is short and easy to answer
-    3. Focuses on student diversity and needs
-    4. Is practical for assessment design
-    
-    Return ONLY the question, no extra text or formatting.
-    """
-    
-    try:
-        if not client:
-            return "OpenAI API key not configured. Please add your API key to the .env file."
-        
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": UDL_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
-            ],
-            max_tokens=100,
-            temperature=0.7
-        )
-        return response.choices[0].message.content.strip()
-    except Exception as e:
-        return f"Error generating clarifying questions: {str(e)}"
+    # Only ask about curriculum if we have the basics
+    if has_objectives and has_subject and has_grade:
+        return "ask_curriculum"
+    else:
+        return "need_more_basics"
+
+def ask_about_curriculum():
+    """Generate question about formal curriculum"""
+    return "Do you have a written formal curriculum for this subject that I should use to determine the scope and extent of the assessment design?"
 
 def generate_udl_assessments_with_rubric(session):
     """Generate UDL assessments and common rubric based on gathered context"""
     context = session["context"]
     
+    curriculum_context = ""
+    if context.get("curriculum_provided") and context.get("formal_curriculum"):
+        curriculum_context = f"""
+    FORMAL CURRICULUM SCOPE:
+    {context['formal_curriculum']}
+    
+    Use this curriculum to determine the appropriate scope and extent of the assessment design.
+    """
+    
     context_summary = f"""
-    Complete context for assessment design:
+    Assessment Design Context:
     - Learning Objectives: {context['learning_objectives']}
     - Subject: {context['subject']}
     - Grade Level: {context['grade_level']}
-    - Class Size: {context['class_size']}
-    - Time Constraints: {context['time_constraints']}
-    - Student Needs: {context['student_needs']}
-    - Cultural Context: {context['cultural_context']}
-    - Technology Access: {context['technology_access']}
-    - Assessment Preferences: {context['assessment_preferences']}
+    - Designed for: Diverse students (assume diverse learning needs, cultural backgrounds, and abilities)
+    
+    {curriculum_context}
+    
+    Focus on creating assessments that work for ALL learners by design, not through accommodations.
     """
     
     user_prompt = f"""
@@ -430,6 +403,7 @@ def generate_udl_assessments_with_rubric(session):
     - Provide multiple means of expression
     - Are culturally responsive and accessible
     - Remove barriers rather than create accommodations
+    - Are designed for diverse students from the start
     """
     
     try:
@@ -510,51 +484,29 @@ def update_context_from_response(session, response_text):
         context["grade_level"] = grade
 
 def handle_context_gathering(session, user_message):
-    """Handle context gathering phase - extract information from user responses"""
-    # This is a simplified approach - in a real implementation, you might want
-    # more sophisticated NLP to extract specific information
+    """Handle context gathering phase - simplified approach"""
     context = session["context"]
     
-    # Simple keyword-based context extraction
-    user_lower = user_message.lower()
+    # Check if this is a curriculum response
+    if context.get("waiting_for_curriculum"):
+        if user_message.lower().strip() in ['yes', 'y', 'yeah', 'yep', 'sure', 'i do', 'i have it']:
+            return "curriculum_provided"
+        else:
+            context["curriculum_provided"] = False
+            return "ready_for_assessments"
     
-    # Extract grade level
-    if any(grade in user_lower for grade in ['kindergarten', 'k-', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th']):
-        context["grade_level"] = user_message
+    # If user provides curriculum content, store it
+    if len(user_message.strip()) > 100:  # Likely curriculum content
+        context["formal_curriculum"] = user_message
+        context["curriculum_provided"] = True
+        return "ready_for_assessments"
     
-    # Extract class size
-    if 'students' in user_lower or 'class' in user_lower:
-        context["class_size"] = user_message
-    
-    # Extract time constraints
-    if any(time_word in user_lower for time_word in ['minutes', 'hours', 'days', 'weeks', 'time']):
-        context["time_constraints"] = user_message
-    
-    # Extract student needs
-    if any(need in user_lower for need in ['special', 'disability', 'iep', '504', 'ell', 'esl', 'gifted']):
-        context["student_needs"] = user_message
-    
-    # Extract cultural context
-    if any(cultural in user_lower for cultural in ['culture', 'diverse', 'multicultural', 'language', 'background']):
-        context["cultural_context"] = user_message
-    
-    # Extract technology access
-    if any(tech in user_lower for tech in ['computer', 'tablet', 'internet', 'technology', 'digital']):
-        context["technology_access"] = user_message
-    
-    # Extract assessment preferences
-    if any(assessment in user_lower for assessment in ['test', 'project', 'presentation', 'portfolio', 'essay']):
-        context["assessment_preferences"] = user_message
-    
-    # Check if we have enough context to proceed
+    # Check if we have enough basic context
     required_fields = ["learning_objectives", "grade_level", "subject"]
-    filled_fields = sum(1 for field in required_fields if context[field])
-    total_fields = len(required_fields)
-    
-    if filled_fields >= total_fields:
+    if all(context[field] for field in required_fields):
         return "ready_for_assessments"
     else:
-        return "need_more_context"
+        return "need_more_basics"
 
 def get_context_progress(session):
     """Get progress indicator for context gathering"""
@@ -598,57 +550,139 @@ def chat():
             objectives_response = process_objectives_input(session, message)
             update_context_from_response(session, objectives_response)
             
-            # Generate first clarifying question
-            question = generate_clarifying_questions(session)
+            # Check if we need to ask about curriculum
+            curriculum_status = check_if_curriculum_needed(session)
             
-            # Update state
-            session['conversation_state'] = "gathering_context"
-            
-            filled, total = get_context_progress(session)
-            response_content = f"""# Learning Objectives Received ✅
+            if curriculum_status == "ask_curriculum":
+                session['conversation_state'] = "asking_curriculum"
+                session['context']['waiting_for_curriculum'] = True
+                
+                response_content = f"""# Learning Objectives Received ✅
 
 {objectives_response}
 
 ---
 
-## Quick Question ({filled}/{total})
+## Curriculum Question
 
-To design the best assessments for your students, I need to ask:
+{ask_about_curriculum()}
 
-**{question}**
+Please respond with "Yes" if you have it, or "No" if you don't."""
+            
+            else:
+                # Not enough basic info, go to context gathering
+                session['conversation_state'] = "gathering_context"
+                response_content = f"""# Learning Objectives Received ✅
 
-Just type your answer! 😊"""
+{objectives_response}
+
+I still need a bit more information. Could you please specify the subject and grade level?"""
         
-        elif conversation_state == "gathering_context":
-            # Handle context gathering
+        elif conversation_state == "asking_curriculum":
+            # Handle curriculum response
             context_status = handle_context_gathering(session, message)
             
-            if context_status == "ready_for_assessments":
-                # Generate assessments and rubric
+            if context_status == "curriculum_provided":
+                session['conversation_state'] = "waiting_for_curriculum_content"
+                response_content = """Great! Please share your formal curriculum for this subject.
+
+I'll use it to determine the appropriate scope and extent of the assessment design."""
+            
+            elif context_status == "ready_for_assessments":
+                # No curriculum, proceed to generate assessments
                 assessments_response = generate_udl_assessments_with_rubric(session)
-                session['conversation_state'] = "completed"
+                session['conversation_state'] = "quality_check"
                 
                 response_content = f"""# UDL Assessment Options & Rubric 🎯
 
-Based on all the information you've provided, here are your personalized UDL assessment options:
+Based on your learning objectives, here are your personalized UDL assessment options designed for diverse students:
 
 {assessments_response}
 
-## Session Complete ✅
+---
 
-You now have multiple UDL-aligned assessment options with a common rubric. You can start a new session anytime by sharing new learning objectives!"""
+## Quality Check Required ✅
+
+Please review all the assessment materials and grading rubric to ensure they are:
+- **Correct** - Accurate and aligned with your learning objectives
+- **Relevant** - Appropriate for your subject and grade level  
+- **Rigorous** - Challenging and meaningful for student learning
+- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
+
+Let me know if you'd like any adjustments or have questions about the assessments!"""
+        
+        elif conversation_state == "waiting_for_curriculum_content":
+            # Handle curriculum content
+            context_status = handle_context_gathering(session, message)
+            
+            if context_status == "ready_for_assessments":
+                # Generate assessments with curriculum
+                assessments_response = generate_udl_assessments_with_rubric(session)
+                session['conversation_state'] = "quality_check"
+                
+                response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+Based on your learning objectives and formal curriculum, here are your personalized UDL assessment options designed for diverse students:
+
+{assessments_response}
+
+---
+
+## Quality Check Required ✅
+
+Please review all the assessment materials and grading rubric to ensure they are:
+- **Correct** - Accurate and aligned with your learning objectives and curriculum
+- **Relevant** - Appropriate for your subject and grade level  
+- **Rigorous** - Challenging and meaningful for student learning
+- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
+
+Let me know if you'd like any adjustments or have questions about the assessments!"""
+        
+        elif conversation_state == "gathering_context":
+            # Handle basic context gathering
+            context_status = handle_context_gathering(session, message)
+            
+            if context_status == "ready_for_assessments":
+                # Generate assessments
+                assessments_response = generate_udl_assessments_with_rubric(session)
+                session['conversation_state'] = "quality_check"
+                
+                response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+Based on your information, here are your personalized UDL assessment options designed for diverse students:
+
+{assessments_response}
+
+---
+
+## Quality Check Required ✅
+
+Please review all the assessment materials and grading rubric to ensure they are:
+- **Correct** - Accurate and aligned with your learning objectives
+- **Relevant** - Appropriate for your subject and grade level  
+- **Rigorous** - Challenging and meaningful for student learning
+- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
+
+Let me know if you'd like any adjustments or have questions about the assessments!"""
             
             else:
-                # Need more context - generate one more question
-                question = generate_clarifying_questions(session)
-                filled, total = get_context_progress(session)
-                response_content = f"""Thanks! 👍
+                # Still need basic info
+                response_content = """Thanks! I still need a bit more information.
 
-## Quick Question ({filled}/{total})
+Could you please specify the subject and grade level for these learning objectives?"""
+        
+        elif conversation_state == "quality_check":
+            # Handle quality check feedback
+            session['conversation_state'] = "completed"
+            response_content = """# Thank you for the feedback! ✅
 
-**{question}**
+Your UDL assessment design session is complete. You now have multiple assessment options with a common rubric designed for diverse students.
 
-Almost done! 🚀"""
+To start a new assessment design session, simply share your new learning objectives and I'll guide you through the process again.
+
+**Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others."
+
+Ready for your next lesson's assessments? 🚀"""
         
         elif conversation_state == "completed":
             # Session completed, offer to start new session
@@ -727,12 +761,8 @@ def reset_session(session_token):
             "learning_objectives": None,
             "grade_level": None,
             "subject": None,
-            "class_size": None,
-            "time_constraints": None,
-            "student_needs": None,
-            "cultural_context": None,
-            "technology_access": None,
-            "assessment_preferences": None
+            "formal_curriculum": None,
+            "curriculum_provided": False
         },
         "created_at": datetime.now().isoformat(),
         "last_activity": datetime.now().isoformat()
