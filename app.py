@@ -165,13 +165,15 @@ def get_or_create_session(session_token):
     if session_token not in chat_sessions:
         chat_sessions[session_token] = {
             "messages": [],
-            "conversation_state": "waiting_for_objectives",
+            "conversation_state": "waiting_for_mode_selection",
+            "mode": None,
             "context": {
                 "learning_objectives": None,
                 "grade_level": None,
                 "subject": None,
                 "formal_curriculum": None,
-                "curriculum_provided": False
+                "curriculum_provided": False,
+                "assessment_content": None
             },
             "created_at": datetime.now().isoformat(),
             "last_activity": datetime.now().isoformat()
@@ -423,6 +425,53 @@ def generate_udl_assessments_with_rubric(session):
     except Exception as e:
         return f"Error generating assessments: {str(e)}"
 
+def evaluate_assessment_udl(assessment_content):
+    """Evaluate existing assessment against UDL principles"""
+    user_prompt = f"""
+Analyze the following assessment against UDL principles and provide detailed feedback.
+
+Assessment Content:
+{assessment_content}
+
+Provide a comprehensive evaluation including:
+
+1. **Strengths**: What aspects of this assessment already align with UDL principles?
+
+2. **Barriers Identified**: What specific barriers to accessibility and inclusion exist?
+   - Cognitive load issues
+   - Accessibility barriers
+   - Equity concerns
+   - Limited means of expression
+
+3. **UDL Analysis**: How does this assessment align with each UDL principle?
+   - Multiple Means of Engagement (Principle 1)
+   - Multiple Means of Representation (Principle 2)
+   - Multiple Means of Action & Expression (Principle 3)
+
+4. **Improvement Suggestions**: Specific, actionable recommendations with clear UDL rationale
+
+5. **Cultural Responsiveness**: How can this assessment be more culturally responsive?
+
+Focus on removing barriers rather than accommodating differences. Provide clear explanations of UDL rationale behind each suggestion.
+"""
+    
+    try:
+        if not client:
+            return "OpenAI API key not configured. Please add your API key to the .env file."
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": UDL_SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.7
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error evaluating assessment: {str(e)}"
+
 def get_general_udl_guidance(user_message):
     """Provide general UDL guidance using system prompt"""
     user_prompt = f"""
@@ -462,9 +511,35 @@ def get_general_udl_guidance(user_message):
 def extract_context_from_response(response_text, context_field):
     """Extract specific context information from AI response"""
     lines = response_text.split('\n')
-    for line in lines:
+    for i, line in enumerate(lines):
         if line.startswith(context_field.upper() + ':'):
-            return line.split(':', 1)[1].strip()
+            # Get the content after the colon
+            content = line.split(':', 1)[1].strip()
+            
+            # For OBJECTIVES, collect all the numbered items
+            if context_field.upper() == "OBJECTIVES":
+                # Look for numbered objectives on following lines
+                objectives = []
+                for j in range(i + 1, len(lines)):
+                    next_line = lines[j].strip()
+                    if next_line and next_line.startswith(('1.', '2.', '3.', '4.', '5.', '-', '•')):
+                        # Remove numbering and clean up
+                        clean_obj = next_line.split('.', 1)[-1].strip()
+                        if clean_obj:
+                            objectives.append(clean_obj)
+                    elif next_line and next_line.startswith(('SUBJECT:', 'GRADE:', 'ADDITIONAL_CONTEXT:')):
+                        break
+                    elif not next_line:
+                        # Empty line, continue
+                        continue
+                    elif next_line and not next_line.startswith(('OBJECTIVES:', 'SUBJECT:', 'GRADE:', 'ADDITIONAL_CONTEXT:')):
+                        # If it's not another field, it might be an objective
+                        objectives.append(next_line.strip())
+                
+                if objectives:
+                    return '\n'.join(objectives)
+            
+            return content if content else None
     return None
 
 def update_context_from_response(session, response_text):
@@ -475,6 +550,7 @@ def update_context_from_response(session, response_text):
     objectives = extract_context_from_response(response_text, "OBJECTIVES")
     subject = extract_context_from_response(response_text, "SUBJECT")
     grade = extract_context_from_response(response_text, "GRADE")
+    
     
     if objectives:
         context["learning_objectives"] = objectives
@@ -500,6 +576,27 @@ def handle_context_gathering(session, user_message):
         context["formal_curriculum"] = user_message
         context["curriculum_provided"] = True
         return "ready_for_assessments"
+    
+    # Extract subject and grade level from user message
+    user_lower = user_message.lower()
+    
+    # Extract subject
+    if not context["subject"]:
+        if any(subject in user_lower for subject in ['biology', 'science', 'math', 'mathematics', 'english', 'history', 'social studies', 'chemistry', 'physics', 'art', 'music', 'physical education', 'pe']):
+            # Extract the subject word
+            for subject in ['biology', 'science', 'math', 'mathematics', 'english', 'history', 'social studies', 'chemistry', 'physics', 'art', 'music', 'physical education', 'pe']:
+                if subject in user_lower:
+                    context["subject"] = subject.capitalize()
+                    break
+    
+    # Extract grade level
+    if not context["grade_level"]:
+        if any(grade in user_lower for grade in ['kindergarten', 'k-', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', 'grade 1', 'grade 2', 'grade 3', 'grade 4', 'grade 5', 'grade 6', 'grade 7', 'grade 8', 'grade 9', 'grade 10', 'grade 11', 'grade 12']):
+            # Extract the grade
+            for grade in ['kindergarten', 'k-', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', 'grade 1', 'grade 2', 'grade 3', 'grade 4', 'grade 5', 'grade 6', 'grade 7', 'grade 8', 'grade 9', 'grade 10', 'grade 11', 'grade 12']:
+                if grade in user_lower:
+                    context["grade_level"] = grade
+                    break
     
     # Check if we have enough basic context
     required_fields = ["learning_objectives", "grade_level", "subject"]
@@ -545,13 +642,72 @@ def chat():
         # Handle conversation flow based on current state
         response_content = ""
         
-        if conversation_state == "waiting_for_objectives":
+        if conversation_state == "waiting_for_mode_selection":
+            # Handle mode selection
+            if "design" in message.lower() or "create" in message.lower() or "new assessment" in message.lower():
+                session['mode'] = 'design'
+                session['conversation_state'] = "waiting_for_objectives"
+                response_content = """# Design Mode Selected 🎨
+
+Great! I'll help you create new UDL-aligned assessments.
+
+Please share your learning objectives, subject, and grade level to get started.
+
+**Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade"
+
+Ready to design some inclusive assessments! 🚀"""
+            
+            elif "evaluate" in message.lower() or "analyze" in message.lower() or "review" in message.lower():
+                session['mode'] = 'evaluate'
+                session['conversation_state'] = "waiting_for_assessment"
+                response_content = """# Evaluation Mode Selected 🔍
+
+Perfect! I'll analyze your existing assessment against UDL principles.
+
+Please share your assessment content (questions, instructions, rubric, etc.) and I'll provide detailed feedback including:
+- Strengths and barriers identified
+- UDL compliance analysis
+- Specific improvement suggestions
+- Cultural responsiveness recommendations
+
+Ready to evaluate your assessment! 📋"""
+            
+            else:
+                response_content = """# Choose Your Mode
+
+Please select how you'd like to work with me:
+
+**🎨 Design Assessments** - Create new UDL-aligned assessments with multiple options
+**🔍 Evaluate Assessment** - Analyze existing assessments for UDL compliance
+
+Just type "design" or "evaluate" to continue!"""
+        
+        elif conversation_state == "waiting_for_assessment":
+            # Handle assessment evaluation mode
+            session['context']['assessment_content'] = message
+            evaluation_response = evaluate_assessment_udl(message)
+            session['conversation_state'] = "completed"
+            
+            response_content = f"""# UDL Assessment Evaluation Report 📊
+
+{evaluation_response}
+
+---
+
+## Evaluation Complete ✅
+
+Your assessment has been analyzed against UDL principles. You can start a new evaluation session anytime by sharing another assessment, or switch to design mode to create new assessments!
+
+**To start fresh:** Simply share a new assessment or type "design" to switch modes."""
+        
+        elif conversation_state == "waiting_for_objectives":
             # Process learning objectives input
             objectives_response = process_objectives_input(session, message)
             update_context_from_response(session, objectives_response)
             
             # Check if we need to ask about curriculum
             curriculum_status = check_if_curriculum_needed(session)
+            
             
             if curriculum_status == "ask_curriculum":
                 session['conversation_state'] = "asking_curriculum"
@@ -756,13 +912,15 @@ def reset_session(session_token):
     # Reset session to initial state
     chat_sessions[session_token] = {
         "messages": [],
-        "conversation_state": "waiting_for_objectives",
+        "conversation_state": "waiting_for_mode_selection",
+        "mode": None,
         "context": {
             "learning_objectives": None,
             "grade_level": None,
             "subject": None,
             "formal_curriculum": None,
-            "curriculum_provided": False
+            "curriculum_provided": False,
+            "assessment_content": None
         },
         "created_at": datetime.now().isoformat(),
         "last_activity": datetime.now().isoformat()
