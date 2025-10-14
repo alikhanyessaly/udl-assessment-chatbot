@@ -847,9 +847,14 @@ You can:
 Please share your assessment content (questions, instructions, rubric, etc.)."""
         
         elif current_state == "EvaluateInputReceived":
-            session['context']['assessment_content'] = message
+            # Check if assessment was already uploaded via PDF
+            if not session['context'].get('assessment_content'):
+                # User provided text description
+                session['context']['assessment_content'] = message
+            
             session['state'] = 'EvaluateAssessmentReceived'
-            alignment = classify_assessment_udl_alignment(message)
+            assessment_to_evaluate = session['context']['assessment_content']
+            alignment = classify_assessment_udl_alignment(assessment_to_evaluate)
             session['context']['assessment_alignment'] = alignment
             
             if alignment == "aligned":
