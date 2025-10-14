@@ -7,6 +7,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 import openai
 import pickle
+import PyPDF2
+import io
 
 # Load environment variables
 load_dotenv()
@@ -165,15 +167,14 @@ def get_or_create_session(session_token):
     if session_token not in chat_sessions:
         chat_sessions[session_token] = {
             "messages": [],
-            "conversation_state": "waiting_for_mode_selection",
-            "mode": None,
+            "state": "Start",
+            "branch": None,  # "design" or "evaluate"
             "context": {
                 "learning_objectives": None,
                 "grade_level": None,
                 "subject": None,
-                "formal_curriculum": None,
-                "curriculum_provided": False,
-                "assessment_content": None
+                "assessment_content": None,
+                "assessment_alignment": None  # "aligned" or "not_aligned"
             },
             "created_at": datetime.now().isoformat(),
             "last_activity": datetime.now().isoformat()
@@ -185,6 +186,17 @@ def update_session_activity(session_token):
     if session_token in chat_sessions:
         chat_sessions[session_token]["last_activity"] = datetime.now().isoformat()
         save_chat_sessions()
+
+def extract_text_from_pdf(pdf_file):
+    """Extract text from uploaded PDF file"""
+    try:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text() + "\n"
+        return text.strip()
+    except Exception as e:
+        return f"Error extracting PDF: {str(e)}"
 
 def analyze_assessment_udl(assessment_description):
     """Analyze assessment against UDL principles"""
@@ -287,22 +299,17 @@ def generate_assessment_options(learning_objectives, grade_level, subject):
     except Exception as e:
         return f"Error generating assessment options: {str(e)}"
 
-def process_objectives_input(session, user_message):
-    """Process learning objectives input and extract key information"""
+# New State Machine Functions for UDL Assessment Assistant
+
+def extract_basic_info(user_message):
+    """Extract learning objectives, grade, and subject from user input"""
     user_prompt = f"""
-    A teacher has provided their learning objectives: "{user_message}"
+    Extract the following information from this teacher input: "{user_message}"
     
-    Extract and structure the following information:
-    1. Learning objectives (list them clearly)
-    2. Subject area (if mentioned)
-    3. Grade level (if mentioned)
-    4. Any other context clues
-    
-    Respond in this format:
-    OBJECTIVES: [list the objectives]
-    SUBJECT: [subject if mentioned, otherwise "Not specified"]
+    Format your response as:
+    OBJECTIVES: [list learning objectives]
     GRADE: [grade level if mentioned, otherwise "Not specified"]
-    ADDITIONAL_CONTEXT: [any other relevant information]
+    SUBJECT: [subject if mentioned, otherwise "Not specified"]
     """
     
     try:
@@ -312,100 +319,75 @@ def process_objectives_input(session, user_message):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": UDL_SYSTEM_PROMPT},
+                {"role": "system", "content": "You are a helpful assistant that extracts structured information from teacher input."},
                 {"role": "user", "content": user_prompt}
             ],
-            max_tokens=300,
+            max_tokens=200,
             temperature=0.3
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error processing objectives: {str(e)}"
+        return f"Error extracting information: {str(e)}"
 
-def check_if_curriculum_needed(session):
-    """Check if we need to ask about formal curriculum"""
-    context = session["context"]
-    
-    # Check if we have the essential information
-    has_objectives = bool(context['learning_objectives'])
-    has_subject = bool(context['subject'])
-    has_grade = bool(context['grade_level'])
-    
-    # Only ask about curriculum if we have the basics
-    if has_objectives and has_subject and has_grade:
-        return "ask_curriculum"
-    else:
-        return "need_more_basics"
-
-def ask_about_curriculum():
-    """Generate question about formal curriculum"""
-    return "Do you have a written formal curriculum for this subject that I should use to determine the scope and extent of the assessment design?"
-
-def generate_udl_assessments_with_rubric(session):
-    """Generate UDL assessments and common rubric based on gathered context"""
-    context = session["context"]
-    
-    curriculum_context = ""
-    if context.get("curriculum_provided") and context.get("formal_curriculum"):
-        curriculum_context = f"""
-    FORMAL CURRICULUM SCOPE:
-    {context['formal_curriculum']}
-    
-    Use this curriculum to determine the appropriate scope and extent of the assessment design.
-    """
-    
-    context_summary = f"""
-    Assessment Design Context:
-    - Learning Objectives: {context['learning_objectives']}
-    - Subject: {context['subject']}
-    - Grade Level: {context['grade_level']}
-    - Designed for: Diverse students (assume diverse learning needs, cultural backgrounds, and abilities)
-    
-    {curriculum_context}
-    
-    Focus on creating assessments that work for ALL learners by design, not through accommodations.
-    """
-    
+def classify_assessment_udl_alignment(assessment_content):
+    """Classify if assessment is UDL aligned or not"""
     user_prompt = f"""
-    Generate 4-5 diverse UDL-aligned assessment options and one comprehensive rubric that works for all assessments.
+    Analyze this assessment for UDL alignment:
     
-    {context_summary}
+    {assessment_content}
     
-    Structure your response as follows:
+    Determine if this assessment is UDL-aligned or not. Consider:
+    - Multiple means of representation
+    - Multiple means of action and expression  
+    - Multiple means of engagement
+    - Accessibility barriers
+    - Cultural responsiveness
     
-    ## UDL Assessment Options
+    Respond with only: "ALIGNED" or "NOT_ALIGNED"
+    """
     
-    ### Assessment Option 1: [Name]
+    try:
+        if not client:
+            return "NOT_ALIGNED"
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a UDL expert classifier. Respond with only ALIGNED or NOT_ALIGNED."},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=10,
+            temperature=0.1
+        )
+        result = response.choices[0].message.content.strip().upper()
+        return "aligned" if "ALIGNED" in result and "NOT" not in result else "not_aligned"
+    except Exception as e:
+        return "not_aligned"
+
+def generate_udl_assessment_options(context):
+    """Generate UDL assessment options and universal rubric"""
+    user_prompt = f"""
+    Generate UDL assessment options based on:
+    - Learning Objectives: {context['learning_objectives']}
+    - Grade: {context['grade_level']}
+    - Subject: {context['subject']}
+    
+    Provide:
+    1. Multiple assessment options with different formats
+    2. A universal rubric that works for all options
+    3. Implementation guidance
+    
+    Structure as:
+    ## Assessment Options
+    ### Option 1: [Name]
     **Format:** [Description]
-    **UDL Alignment:** [Which principles this addresses]
-    **Implementation:** [Step-by-step guidance]
-    **Accessibility Features:** [How this removes barriers]
+    **UDL Alignment:** [Explanation]
     
-    ### Assessment Option 2: [Name]
-    [Continue for each option]
-    
-    ## Common Assessment Rubric
-    
-    ### [Criteria 1 Name]
-    **Excellent (4):** [Description]
-    **Proficient (3):** [Description] 
-    **Developing (2):** [Description]
-    **Beginning (1):** [Description]
-    
-    ### [Criteria 2 Name]
-    [Continue for each criteria]
+    ## Universal Rubric
+    [Rubric details]
     
     ## Implementation Notes
-    - How to use the rubric across all assessments
-    - Adaptation suggestions for different learners
-    - Cultural responsiveness considerations
-    
-    Ensure all assessments:
-    - Measure the same learning objectives
-    - Provide multiple means of expression
-    - Are culturally responsive and accessible
-    - Remove barriers rather than create accommodations
-    - Are designed for diverse students from the start
+    [Guidance for teachers]
     """
     
     try:
@@ -418,7 +400,7 @@ def generate_udl_assessments_with_rubric(session):
                 {"role": "system", "content": UDL_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt}
             ],
-            max_tokens=1500,
+            max_tokens=1200,
             temperature=0.7
         )
         return response.choices[0].message.content
@@ -426,70 +408,20 @@ def generate_udl_assessments_with_rubric(session):
         return f"Error generating assessments: {str(e)}"
 
 def evaluate_assessment_udl(assessment_content):
-    """Evaluate existing assessment against UDL principles"""
+    """Evaluate assessment against UDL principles"""
     user_prompt = f"""
-Analyze the following assessment against UDL principles and provide detailed feedback.
+    Evaluate this assessment against UDL principles:
 
-Assessment Content:
 {assessment_content}
 
-Provide a comprehensive evaluation including:
-
-1. **Strengths**: What aspects of this assessment already align with UDL principles?
-
-2. **Barriers Identified**: What specific barriers to accessibility and inclusion exist?
-   - Cognitive load issues
-   - Accessibility barriers
-   - Equity concerns
-   - Limited means of expression
-
-3. **UDL Analysis**: How does this assessment align with each UDL principle?
-   - Multiple Means of Engagement (Principle 1)
-   - Multiple Means of Representation (Principle 2)
-   - Multiple Means of Action & Expression (Principle 3)
-
-4. **Improvement Suggestions**: Specific, actionable recommendations with clear UDL rationale
-
-5. **Cultural Responsiveness**: How can this assessment be more culturally responsive?
-
-Focus on removing barriers rather than accommodating differences. Provide clear explanations of UDL rationale behind each suggestion.
+    Provide:
+    1. Strengths (UDL-aligned elements)
+    2. Barriers identified
+    3. Improvement suggestions with UDL rationale
+    4. Relevant UDL principles
+    
+    Focus on removing barriers rather than accommodating differences.
 """
-    
-    try:
-        if not client:
-            return "OpenAI API key not configured. Please add your API key to the .env file."
-        
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": UDL_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
-            ],
-            max_tokens=1500,
-            temperature=0.7
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error evaluating assessment: {str(e)}"
-
-def get_general_udl_guidance(user_message):
-    """Provide general UDL guidance using system prompt"""
-    user_prompt = f"""
-    The user has asked: "{user_message}"
-    
-    Provide comprehensive UDL guidance that addresses their question while following all UDL principles.
-    
-    Structure your response to include:
-    - Direct answer to their question
-    - Multiple options and approaches (never single solutions)
-    - Accessibility considerations
-    - Cultural responsiveness factors
-    - Relevant UDL principles and guidelines
-    - Practical implementation strategies
-    - Resources for further learning
-    
-    Ensure your response builds teacher capacity while maintaining their professional agency.
-    """
     
     try:
         if not client:
@@ -506,116 +438,178 @@ def get_general_udl_guidance(user_message):
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error providing UDL guidance: {str(e)}"
+        return f"Error evaluating assessment: {str(e)}"
 
-def extract_context_from_response(response_text, context_field):
-    """Extract specific context information from AI response"""
+def generate_quality_check_report(assessments_markdown, context):
+    """Generate a Quality Check report/checklist for produced assessments"""
+    user_prompt = f"""
+    You are performing a Quality Check on the following UDL assessment materials.
+
+    ## CONTEXT
+    - Learning Objectives: {context.get('learning_objectives')}
+    - Grade Level: {context.get('grade_level')}
+    - Subject: {context.get('subject')}
+
+    ## ASSESSMENT MATERIALS
+    {assessments_markdown}
+
+    Produce a Quality Check report that includes:
+    1) Validation: correctness, relevance to objectives, rigor appropriate to grade/subject
+    2) Accessibility & UDL: representation, action/expression, engagement (note concrete strengths and gaps)
+    3) Cultural Responsiveness: identity representation, bias checks, authenticity
+    4) Practicality: resources/tools required, timing/pacing flexibility, assistive tech compatibility
+    5) Checklist with [ ] items teachers can verify quickly
+    6) Top 5 fixes to apply before classroom use
+
+    Use clear headings and concise, actionable bullets. Keep structure consistent and teacher-ready.
+    """
+    try:
+        if not client:
+            return "OpenAI API key not configured. Please add your API key to the .env file."
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": UDL_SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1200,
+            temperature=0.5
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error generating quality check: {str(e)}"
+
+def generate_iteration_refinements(assessments_markdown, qc_report, context):
+    """Generate refinement suggestions and a concise finalize-ready summary"""
+    user_prompt = f"""
+    You are improving the following UDL assessment set based on the Quality Check.
+
+    ## CONTEXT
+    - Learning Objectives: {context.get('learning_objectives')}
+    - Grade Level: {context.get('grade_level')}
+    - Subject: {context.get('subject')}
+
+    ## CURRENT ASSESSMENTS
+    {assessments_markdown}
+
+    ## QUALITY CHECK REPORT
+    {qc_report}
+
+    Provide:
+    1) Iteration Plan: prioritized refinements mapped to QC issues (bulleted, specific)
+    2) Updated Accessibility Notes: concrete adjustments (captioning, alternative formats, etc.)
+    3) Cultural Responsiveness Enhancements: examples, resources, language guidance
+    4) Finalize-ready Summary: short teacher-facing summary of the improved set
+
+    Be concise, structured, and immediately actionable.
+    """
+    try:
+        if not client:
+            return "OpenAI API key not configured. Please add your API key to the .env file."
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": UDL_SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1200,
+            temperature=0.5
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error generating iteration refinements: {str(e)}"
+
+def apply_user_refinements(assessments_markdown, user_suggestions, context):
+    """Apply user-provided refinement suggestions to regenerate improved assessments"""
+    user_prompt = f"""
+    You are updating an existing UDL assessment set based on a teacher's refinement suggestions.
+
+    ## CONTEXT
+    - Learning Objectives: {context.get('learning_objectives')}
+    - Grade Level: {context.get('grade_level')}
+    - Subject: {context.get('subject')}
+
+    ## CURRENT ASSESSMENTS
+    {assessments_markdown}
+
+    ## TEACHER SUGGESTIONS (APPLY THESE CHANGES NOW)
+    {user_suggestions}
+
+    Regenerate the full assessment set (4–5 options) and the universal rubric with the changes applied.
+    Keep the structure consistent and ensure strong alignment to UDL (representation, action & expression, engagement), accessibility, and cultural responsiveness. Be concise and teacher-ready.
+    """
+    try:
+        if not client:
+            return "OpenAI API key not configured. Please add your API key to the .env file."
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": UDL_SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.5
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error applying refinements: {str(e)}"
+def parse_extracted_info(response_text):
+    """Parse extracted information from AI response"""
+    context = {"learning_objectives": None, "grade_level": None, "subject": None}
+    
     lines = response_text.split('\n')
-    for i, line in enumerate(lines):
-        if line.startswith(context_field.upper() + ':'):
-            # Get the content after the colon
-            content = line.split(':', 1)[1].strip()
-            
-            # For OBJECTIVES, collect all the numbered items
-            if context_field.upper() == "OBJECTIVES":
-                # Look for numbered objectives on following lines
-                objectives = []
-                for j in range(i + 1, len(lines)):
-                    next_line = lines[j].strip()
-                    if next_line and next_line.startswith(('1.', '2.', '3.', '4.', '5.', '-', '•')):
-                        # Remove numbering and clean up
-                        clean_obj = next_line.split('.', 1)[-1].strip()
-                        if clean_obj:
-                            objectives.append(clean_obj)
-                    elif next_line and next_line.startswith(('SUBJECT:', 'GRADE:', 'ADDITIONAL_CONTEXT:')):
-                        break
-                    elif not next_line:
-                        # Empty line, continue
-                        continue
-                    elif next_line and not next_line.startswith(('OBJECTIVES:', 'SUBJECT:', 'GRADE:', 'ADDITIONAL_CONTEXT:')):
-                        # If it's not another field, it might be an objective
-                        objectives.append(next_line.strip())
-                
-                if objectives:
-                    return '\n'.join(objectives)
-            
-            return content if content else None
-    return None
+    for line in lines:
+        if line.startswith('OBJECTIVES:'):
+            context["learning_objectives"] = line.split(':', 1)[1].strip()
+        elif line.startswith('GRADE:'):
+            grade = line.split(':', 1)[1].strip()
+            if grade != "Not specified":
+                context["grade_level"] = grade
+        elif line.startswith('SUBJECT:'):
+            subject = line.split(':', 1)[1].strip()
+            if subject != "Not specified":
+                context["subject"] = subject
+    
+    return context
 
-def update_context_from_response(session, response_text):
-    """Update session context based on AI response"""
-    context = session["context"]
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    """Handle PDF file upload and extract text"""
+    try:
+        session_token = request.form.get('session_token')
+        if not session_token:
+            return jsonify({'error': 'Session token required'}), 400
+        
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are supported'}), 400
+        
+        # Extract text from PDF
+        pdf_text = extract_text_from_pdf(file)
+        
+        # Store in session context
+        session = get_or_create_session(session_token)
+        session['context']['assessment_content'] = pdf_text
+        save_chat_sessions()
+        
+        return jsonify({
+            'success': True,
+            'text': pdf_text[:500] + '...' if len(pdf_text) > 500 else pdf_text,
+            'message': 'PDF uploaded and processed successfully'
+        })
     
-    # Extract information from the response
-    objectives = extract_context_from_response(response_text, "OBJECTIVES")
-    subject = extract_context_from_response(response_text, "SUBJECT")
-    grade = extract_context_from_response(response_text, "GRADE")
-    
-    
-    if objectives:
-        context["learning_objectives"] = objectives
-    if subject and subject != "Not specified":
-        context["subject"] = subject
-    if grade and grade != "Not specified":
-        context["grade_level"] = grade
-
-def handle_context_gathering(session, user_message):
-    """Handle context gathering phase - simplified approach"""
-    context = session["context"]
-    
-    # Check if this is a curriculum response
-    if context.get("waiting_for_curriculum"):
-        if user_message.lower().strip() in ['yes', 'y', 'yeah', 'yep', 'sure', 'i do', 'i have it']:
-            return "curriculum_provided"
-        else:
-            context["curriculum_provided"] = False
-            return "ready_for_assessments"
-    
-    # If user provides curriculum content, store it
-    if len(user_message.strip()) > 100:  # Likely curriculum content
-        context["formal_curriculum"] = user_message
-        context["curriculum_provided"] = True
-        return "ready_for_assessments"
-    
-    # Extract subject and grade level from user message
-    user_lower = user_message.lower()
-    
-    # Extract subject
-    if not context["subject"]:
-        if any(subject in user_lower for subject in ['biology', 'science', 'math', 'mathematics', 'english', 'history', 'social studies', 'chemistry', 'physics', 'art', 'music', 'physical education', 'pe']):
-            # Extract the subject word
-            for subject in ['biology', 'science', 'math', 'mathematics', 'english', 'history', 'social studies', 'chemistry', 'physics', 'art', 'music', 'physical education', 'pe']:
-                if subject in user_lower:
-                    context["subject"] = subject.capitalize()
-                    break
-    
-    # Extract grade level
-    if not context["grade_level"]:
-        if any(grade in user_lower for grade in ['kindergarten', 'k-', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', 'grade 1', 'grade 2', 'grade 3', 'grade 4', 'grade 5', 'grade 6', 'grade 7', 'grade 8', 'grade 9', 'grade 10', 'grade 11', 'grade 12']):
-            # Extract the grade
-            for grade in ['kindergarten', 'k-', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', 'grade 1', 'grade 2', 'grade 3', 'grade 4', 'grade 5', 'grade 6', 'grade 7', 'grade 8', 'grade 9', 'grade 10', 'grade 11', 'grade 12']:
-                if grade in user_lower:
-                    context["grade_level"] = grade
-                    break
-    
-    # Check if we have enough basic context
-    required_fields = ["learning_objectives", "grade_level", "subject"]
-    if all(context[field] for field in required_fields):
-        return "ready_for_assessments"
-    else:
-        return "need_more_basics"
-
-def get_context_progress(session):
-    """Get progress indicator for context gathering"""
-    context = session["context"]
-    required_fields = ["learning_objectives", "grade_level", "subject"]
-    filled_fields = sum(1 for field in required_fields if context[field])
-    total_fields = len(required_fields)
-    return filled_fields, total_fields
+    except Exception as e:
+        return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Main chat endpoint with structured conversation flow"""
+    """Main chat endpoint with new state machine logic"""
     try:
         data = request.get_json()
         message = data.get('message', '').strip()
@@ -629,7 +623,7 @@ def chat():
             session_token = generate_session_token()
         
         session = get_or_create_session(session_token)
-        conversation_state = session['conversation_state']
+        current_state = session['state']
         
         # Add user message to session
         session['messages'].append({
@@ -642,281 +636,386 @@ def chat():
         # Handle conversation flow based on current state
         response_content = ""
         
-        # Check for mode switching first (works from any state)
-        if (message.lower().strip() == "design" or 
-            "switch to design" in message.lower() or
-            "create new assessment" in message.lower()):
-            # Switch to design mode
-            session['mode'] = 'design'
-            session['conversation_state'] = "waiting_for_objectives"
-            session['context'] = {
-                "learning_objectives": None,
-                "grade_level": None,
-                "subject": None,
-                "formal_curriculum": None,
-                "curriculum_provided": False,
-                "assessment_content": None
-            }
-            response_content = """# Design Mode Selected 🎨
+        # State: Start
+        if current_state == "Start":
+            if message.lower().strip() == "design":
+                session['branch'] = 'design'
+                session['state'] = 'DesignMode'
+                response_content = """# Design Mode Selected 🎨
 
-Great! I'll help you create new UDL-aligned assessments.
+Could you provide:
+1) Learning Objectives
+2) Grade
+3) Subject
 
-## 🚀 How It Works
-- **Step 1:** Share your learning objectives
-- **Step 2:** Answer a few quick questions about your context  
-- **Step 3:** Get multiple assessment options + common rubric
+Please share these details and I'll help you create UDL-aligned assessments!
 
-## ✨ UDL Benefits
-- Multiple ways for students to demonstrate learning
-- Accessibility built-in from the start
-- Cultural responsiveness and inclusion
-- One rubric that works across all options
+---
 
-## 💡 Try These Examples
-Click any button below to get started:
+Quick examples:
 
-**🎨 Biology** - Photosynthesis assessment options
-**🧮 Math** - Linear equations with multiple formats
-**📜 History** - World War II analysis projects
-**📚 English** - Persuasive writing with choices
+<button onclick=\"sendQuickMessage('Learning objectives: explain photosynthesis process; identify plant parts; present findings. Subject: Biology. Grade: 8')\" style=\"background: #4f46e5; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-right: 8px;\">🌿 Biology - Photosynthesis (Grade 8)</button>
 
-**Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade"
+<button onclick=\"sendQuickMessage('Learning objectives: solve linear equations; graph solutions; justify reasoning. Subject: Mathematics. Grade: 9')\" style=\"background: #10b981; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem;\">➗ Math - Linear Equations (Grade 9)</button>"""
+            elif message.lower().strip() == "evaluate":
+                session['branch'] = 'evaluate'
+                session['state'] = 'EvaluateMode'
+                response_content = """# Evaluation Mode Selected 🔍
 
-Ready to design some inclusive assessments! 🚀"""
+Could you provide:
+1) Learning Objectives
+2) Grade
+3) Subject
+
+Please share these details and then upload your assessment for evaluation!
+
+---
+
+Quick examples:
+
+<button onclick=\"sendQuickMessage('Learning objectives: analyze causes of World War II; evaluate primary sources; synthesize historical arguments. Subject: History. Grade: 10')\" style=\"background: #f59e0b; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-right: 8px;\">📜 History - WWII Analysis (Grade 10)</button>
+
+<button onclick=\"sendQuickMessage('Learning objectives: write persuasive essays; analyze rhetorical devices; present oral arguments. Subject: English Language Arts. Grade: 11')\" style=\"background: #8b5cf6; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.95rem;\">📚 ELA - Persuasive Writing (Grade 11)</button>"""
+            else:
+                response_content = """# Welcome to the UDL Assessment Assistant! 🎯
+
+Please choose one of the following options:
+- **Design** → Create new UDL-aligned assessments
+- **Evaluate** → Analyze existing assessments for UDL compliance
+
+Type "design" or "evaluate" to continue!"""
         
-        elif (message.lower().strip() == "evaluate" or 
-              "switch to evaluate" in message.lower() or
-              "analyze assessment" in message.lower()):
-            # Switch to evaluation mode
-            session['mode'] = 'evaluate'
-            session['conversation_state'] = "waiting_for_assessment"
-            session['context'] = {
-                "learning_objectives": None,
-                "grade_level": None,
-                "subject": None,
-                "formal_curriculum": None,
-                "curriculum_provided": False,
-                "assessment_content": None
-            }
-            response_content = """# Evaluation Mode Selected 🔍
-
-Perfect! I'll analyze your existing assessment against UDL principles.
-
-## 🔍 What I'll Analyze
-- Identify barriers to accessibility and inclusion
-- Check cognitive load and equity considerations  
-- Evaluate multiple means of expression
-- Provide specific improvement suggestions
-
-## 📊 Evaluation Report Will Include
-- Strengths of your current assessment
-- Specific barriers identified
-- UDL-aligned improvement suggestions
-- Clear explanations of UDL rationale
-
-## 💡 Try This Example
-Click the button below to test the evaluation:
-
-<button onclick="sendQuickMessage('ASSESSMENT: Write a 5-paragraph essay about the causes of World War II. Include an introduction, three body paragraphs with supporting evidence, and a conclusion. Use proper grammar and spelling. Due in 2 weeks. RUBRIC: Introduction (25%), Body paragraphs (50%), Conclusion (15%), Grammar/Spelling (10%)')" style="background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">📜 Sample Essay Assessment</button>
-
-**Ready to evaluate?** Share your assessment (questions, instructions, rubric, etc.) and I'll provide detailed UDL analysis!
-
-Ready to evaluate your assessment! 📋"""
-        
-        elif conversation_state == "waiting_for_mode_selection":
-            # Handle mode selection (fallback for when mode switching keywords aren't detected)
-            response_content = """# Choose Your Mode
-
-Please select how you'd like to work with me:
-
-**🎨 Design Assessments** - Create new UDL-aligned assessments with multiple options
-**🔍 Evaluate Assessment** - Analyze existing assessments for UDL compliance
-
-Just type "design" or "evaluate" to continue!"""
-        
-        elif conversation_state == "waiting_for_assessment":
-            # Handle assessment evaluation mode
-            session['context']['assessment_content'] = message
-            evaluation_response = evaluate_assessment_udl(message)
-            session['conversation_state'] = "completed"
+        # Design Branch States
+        elif current_state == "DesignMode":
+            # Extract basic info and move to next state
+            info_response = extract_basic_info(message)
+            extracted_context = parse_extracted_info(info_response)
+            session['context'].update(extracted_context)
+            session['state'] = 'DesignInputReceived'
             
+            response_content = f"""# Information Received ✅
+
+{info_response}
+
+---
+
+Do you have an assessment that you would like to create UDL options for?
+
+<div style=\"margin-top: 8px; display: flex; gap: 8px;\">
+  <button onclick=\"sendQuickMessage('Yes')\" style=\"background:#4f46e5;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">Yes</button>
+  <button onclick=\"sendQuickMessage('No')\" style=\"background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">No</button>
+</div>"""
+        
+        elif current_state == "DesignInputReceived":
+            if message.lower().strip() in ['yes', 'y', 'yeah', 'yep', 'sure']:
+                session['state'] = 'DesignAssessmentYes'
+                response_content = """# Assessment Upload Needed 📄
+
+Please upload or describe the assessment you'd like to create UDL options for.
+
+You can:
+- Upload a file (PDF, Word, etc.)
+- Describe the assessment in text
+- Share the assessment questions and instructions"""
+            else:
+                # Generate assessment options and prompt user for refinement suggestions
+                session['state'] = 'QualityCheckPhase'
+                assessments = generate_udl_assessment_options(session['context'])
+                session['context']['last_assessments'] = assessments
+                session['context']['last_quality_check'] = None
+                response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+{assessments}
+
+---
+
+Share any suggestions (e.g., add captions, broaden examples, adjust timing). I'll update the assessments. Type "finalize" when done."""
+        
+        elif current_state == "DesignAssessmentYes":
+            # Check if assessment was uploaded via PDF or text
+            if session['context'].get('assessment_content'):
+                # Already uploaded via PDF endpoint
+                session['state'] = 'DesignAssessmentReceived'
+                response_content = """# Assessment Received ✅
+
+Would you like to:
+
+<div style=\"margin-top: 8px; display: flex; gap: 8px;\">
+  <button onclick=\"sendQuickMessage('1')\" style=\"background:#4f46e5;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">1) Evaluate this assessment</button>
+  <button onclick=\"sendQuickMessage('2')\" style=\"background:#10b981;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">2) Create alternative versions</button>
+</div>"""
+            else:
+                # User provided text description
+                session['context']['assessment_content'] = message
+                session['state'] = 'DesignAssessmentReceived'
+                response_content = """# Assessment Received ✅
+
+Would you like to:
+
+<div style=\"margin-top: 8px; display: flex; gap: 8px;\">
+  <button onclick=\"sendQuickMessage('1')\" style=\"background:#4f46e5;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">1) Evaluate this assessment</button>
+  <button onclick=\"sendQuickMessage('2')\" style=\"background:#10b981;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">2) Create alternative versions</button>
+</div>"""
+        
+        elif current_state == "DesignAssessmentReceived":
+            if message.strip() == "1":
+                session['state'] = 'EvaluateAssessmentReceived'
+                alignment = classify_assessment_udl_alignment(session['context']['assessment_content'])
+                session['context']['assessment_alignment'] = alignment
+                
+                if alignment == "aligned":
+                    session['state'] = 'EvaluateAligned'
+                    # Generate detailed evaluation report even for aligned assessments
+                    evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
+                    session['context']['evaluation_report'] = evaluation
+                    response_content = f"""# UDL Assessment Evaluation Report 📊
+
+{evaluation}
+
+---
+
+## ✅ This assignment is aligned with UDL guidelines!
+
+Your assessment demonstrates strong UDL principles. Great job designing for all learners!"""
+                else:
+                    session['state'] = 'EvaluateNotAligned'
+                    # Generate detailed evaluation report
+                    evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
+                    session['context']['evaluation_report'] = evaluation
+                    response_content = f"""# UDL Assessment Evaluation Report 📊
+
+{evaluation}
+
+---
+
+## This assignment is not fully aligned with UDL guidelines.
+
+Would you like to adapt this assessment to UDL?
+
+<div style=\"margin-top: 8px; display: flex; gap: 8px;\">
+  <button onclick=\"sendQuickMessage('Yes')\" style=\"background:#4f46e5;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">Yes - Create UDL-aligned alternatives</button>
+  <button onclick=\"sendQuickMessage('No')\" style=\"background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">No - Just review analysis</button>
+</div>"""
+            else:
+                # Generate assessment options immediately
+                session['state'] = 'QualityCheckPhase'
+                assessments = generate_udl_assessment_options(session['context'])
+                session['context']['last_assessments'] = assessments
+                session['context']['last_quality_check'] = None
+                response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+{assessments}
+
+---
+
+Share any suggestions (e.g., add captions, broaden examples, adjust timing). I'll update the assessments. Type "finalize" when done."""
+        
+        elif current_state == "DesignAssessmentNo":
+            session['state'] = 'QualityCheckPhase'
+            assessments = generate_udl_assessment_options(session['context'])
+            response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+{assessments}
+
+---
+
+## Quality Check Phase ✅
+
+Now performing Quality Check of materials and application in the classroom...
+
+Please review the assessment options and rubric above."""
+        
+        # Evaluate Branch States
+        elif current_state == "EvaluateMode":
+            info_response = extract_basic_info(message)
+            extracted_context = parse_extracted_info(info_response)
+            session['context'].update(extracted_context)
+            session['state'] = 'EvaluateInputReceived'
+            
+            response_content = f"""# Information Received ✅
+
+{info_response}
+
+---
+
+Could you upload the assessment for evaluation?
+
+You can:
+- **Upload a PDF** (click the 📎 paperclip button)
+- **Paste the text** directly in the chat
+
+Please share your assessment content (questions, instructions, rubric, etc.)."""
+        
+        elif current_state == "EvaluateInputReceived":
+            session['context']['assessment_content'] = message
+            session['state'] = 'EvaluateAssessmentReceived'
+            alignment = classify_assessment_udl_alignment(message)
+            session['context']['assessment_alignment'] = alignment
+            
+            if alignment == "aligned":
+                session['state'] = 'EvaluateAligned'
+                # Generate detailed evaluation report even for aligned assessments
+                evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
+                session['context']['evaluation_report'] = evaluation
+                response_content = f"""# UDL Assessment Evaluation Report 📊
+
+{evaluation}
+
+---
+
+## ✅ This assignment is aligned with UDL guidelines!
+
+Your assessment demonstrates strong UDL principles. Great job designing for all learners!"""
+            else:
+                session['state'] = 'EvaluateNotAligned'
+                # Generate detailed evaluation report
+                evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
+                session['context']['evaluation_report'] = evaluation
+                response_content = f"""# UDL Assessment Evaluation Report 📊
+
+{evaluation}
+
+---
+
+## This assignment is not fully aligned with UDL guidelines.
+
+Would you like to adapt this assessment to UDL?
+
+<div style=\"margin-top: 8px; display: flex; gap: 8px;\">
+  <button onclick=\"sendQuickMessage('Yes')\" style=\"background:#4f46e5;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">Yes - Create UDL-aligned alternatives</button>
+  <button onclick=\"sendQuickMessage('No')\" style=\"background:#ef4444;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;\">No - Just review analysis</button>
+</div>"""
+        
+        elif current_state == "EvaluateAligned":
+            session['state'] = 'End'
+            evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
             response_content = f"""# UDL Assessment Evaluation Report 📊
 
-{evaluation_response}
+{evaluation}
 
 ---
 
 ## Evaluation Complete ✅
 
-Your assessment has been analyzed against UDL principles. You can start a new evaluation session anytime by sharing another assessment, or switch to design mode to create new assessments!
-
-**To start fresh:** Simply share a new assessment or type "design" to switch modes."""
+Your assessment demonstrates strong UDL alignment. Great job designing for all learners!"""
         
-        elif conversation_state == "waiting_for_objectives":
-            # Process learning objectives input
-            objectives_response = process_objectives_input(session, message)
-            update_context_from_response(session, objectives_response)
-            
-            # Check if we need to ask about curriculum
-            curriculum_status = check_if_curriculum_needed(session)
-            
-            
-            if curriculum_status == "ask_curriculum":
-                session['conversation_state'] = "asking_curriculum"
-                session['context']['waiting_for_curriculum'] = True
-                
-                response_content = f"""# Learning Objectives Received ✅
+        elif current_state == "EvaluateNotAligned":
+            if message.lower().strip() in ['yes', 'y', 'yeah', 'yep', 'sure']:
+                # Generate UDL-aligned assessment options immediately
+                session['state'] = 'QualityCheckPhase'
+                assessments = generate_udl_assessment_options(session['context'])
+                session['context']['last_assessments'] = assessments
+                session['context']['last_quality_check'] = None
+                response_content = f"""# UDL Assessment Options & Rubric 🎯
 
-{objectives_response}
+{assessments}
 
 ---
 
-## Curriculum Question
-
-{ask_about_curriculum()}
-
-Please respond with "Yes" if you have it, or "No" if you don't."""
-            
+Share any suggestions (e.g., add captions, broaden examples, adjust timing). I'll update the assessments. Type "finalize" when done."""
             else:
-                # Not enough basic info, go to context gathering
-                session['conversation_state'] = "gathering_context"
-                response_content = f"""# Learning Objectives Received ✅
+                session['state'] = 'ProvideNotAlignedReason'
+                evaluation = evaluate_assessment_udl(session['context']['assessment_content'])
+                response_content = f"""# Assessment Analysis Report 📊
 
-{objectives_response}
-
-I still need a bit more information. Could you please specify the subject and grade level?"""
-        
-        elif conversation_state == "asking_curriculum":
-            # Handle curriculum response
-            context_status = handle_context_gathering(session, message)
-            
-            if context_status == "curriculum_provided":
-                session['conversation_state'] = "waiting_for_curriculum_content"
-                response_content = """Great! Please share your formal curriculum for this subject.
-
-I'll use it to determine the appropriate scope and extent of the assessment design."""
-            
-            elif context_status == "ready_for_assessments":
-                # No curriculum, proceed to generate assessments
-                assessments_response = generate_udl_assessments_with_rubric(session)
-                session['conversation_state'] = "quality_check"
-                
-                response_content = f"""# UDL Assessment Options & Rubric 🎯
-
-Based on your learning objectives, here are your personalized UDL assessment options designed for diverse students:
-
-{assessments_response}
+{evaluation}
 
 ---
 
-## Quality Check Required ✅
+## Analysis Complete ✅
 
-Please review all the assessment materials and grading rubric to ensure they are:
-- **Correct** - Accurate and aligned with your learning objectives
-- **Relevant** - Appropriate for your subject and grade level  
-- **Rigorous** - Challenging and meaningful for student learning
-- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
-
-Let me know if you'd like any adjustments or have questions about the assessments!"""
+Here's why this assignment is not aligned with UDL guidelines: [analysis]"""
         
-        elif conversation_state == "waiting_for_curriculum_content":
-            # Handle curriculum content
-            context_status = handle_context_gathering(session, message)
-            
-            if context_status == "ready_for_assessments":
-                # Generate assessments with curriculum
-                assessments_response = generate_udl_assessments_with_rubric(session)
-                session['conversation_state'] = "quality_check"
-                
-                response_content = f"""# UDL Assessment Options & Rubric 🎯
-
-Based on your learning objectives and formal curriculum, here are your personalized UDL assessment options designed for diverse students:
-
-{assessments_response}
-
----
-
-## Quality Check Required ✅
-
-Please review all the assessment materials and grading rubric to ensure they are:
-- **Correct** - Accurate and aligned with your learning objectives and curriculum
-- **Relevant** - Appropriate for your subject and grade level  
-- **Rigorous** - Challenging and meaningful for student learning
-- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
-
-Let me know if you'd like any adjustments or have questions about the assessments!"""
-        
-        elif conversation_state == "gathering_context":
-            # Handle basic context gathering
-            context_status = handle_context_gathering(session, message)
-            
-            if context_status == "ready_for_assessments":
-                # Generate assessments
-                assessments_response = generate_udl_assessments_with_rubric(session)
-                session['conversation_state'] = "quality_check"
-                
-                response_content = f"""# UDL Assessment Options & Rubric 🎯
-
-Based on your information, here are your personalized UDL assessment options designed for diverse students:
-
-{assessments_response}
-
----
-
-## Quality Check Required ✅
-
-Please review all the assessment materials and grading rubric to ensure they are:
-- **Correct** - Accurate and aligned with your learning objectives
-- **Relevant** - Appropriate for your subject and grade level  
-- **Rigorous** - Challenging and meaningful for student learning
-- **Differentiated** - Provide multiple ways for diverse students to demonstrate learning
-
-Let me know if you'd like any adjustments or have questions about the assessments!"""
-            
-            else:
-                # Still need basic info
-                response_content = """Thanks! I still need a bit more information.
-
-Could you please specify the subject and grade level for these learning objectives?"""
-        
-        elif conversation_state == "quality_check":
-            # Handle quality check feedback
-            session['conversation_state'] = "completed"
-            response_content = """# Thank you for the feedback! ✅
-
-Your UDL assessment design session is complete. You now have multiple assessment options with a common rubric designed for diverse students.
-
-To start a new assessment design session, simply share your new learning objectives and I'll guide you through the process again.
-
-## 💡 Try Another Example
-Click the button below to design assessments for a different subject:
-
-<button onclick="sendQuickMessage('My learning objectives are for students to understand the water cycle, identify different types of clouds, and explain weather patterns. Subject is Earth Science, grade level is 6th grade')" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">🌧️ Water Cycle Assessment</button>
-
-**Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others."
-
-Ready for your next lesson's assessments? 🚀"""
-        
-        elif conversation_state == "completed":
-            # Session completed, offer to start new session
+        elif current_state == "ProvideNotAlignedReason":
+            session['state'] = 'End'
             response_content = """# Session Complete ✅
 
-This session is complete! You have your UDL assessment options and rubric.
+Your assessment analysis is complete. You now have detailed feedback on UDL alignment and improvement suggestions.
 
-To start a new assessment design session, simply share your new learning objectives and I'll guide you through the process again.
-
-## 💡 Try Another Example
-Click the button below to design assessments for a different subject:
-
-<button onclick="sendQuickMessage('My learning objectives are for students to understand the water cycle, identify different types of clouds, and explain weather patterns. Subject is Earth Science, grade level is 6th grade')" style="background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; margin: 10px 0;">🌧️ Water Cycle Assessment</button>
-
-**Example:** "My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others."
-
-Ready for your next lesson's assessments? 🚀"""
+To start a new session, type "design" or "evaluate"."""
         
+        # Shared States
+        elif current_state == "AssessmentCreationMode":
+            session['state'] = 'QualityCheckPhase'
+            assessments = generate_udl_assessment_options(session['context'])
+            # store latest assessments
+            session['context']['last_assessments'] = assessments
+            session['context']['last_quality_check'] = None
+            response_content = f"""# UDL Assessment Options & Rubric 🎯
+
+{assessments}
+
+---
+
+Share any suggestions (e.g., add captions, broaden examples, adjust timing). I'll update the assessments. Type "finalize" when done."""
+        
+        elif current_state == "QualityCheckPhase":
+            # Interactive refinement loop: accept suggestions and regenerate
+            lower = message.lower().strip()
+            if lower in ['finalize', 'done', 'finish', 'no more changes']:
+                session['state'] = 'End'
+                response_content = """# Session Finalized ✅
+
+Your UDL assessment set is ready. To start a new session, type "design" or "evaluate"."""
+            elif lower in ['', 'continue', 'next', 'ok']:
+                # Prompt for suggestions (no automatic QC dump)
+                response_content = """# Quality Check - Your Suggestions ✍️
+
+Share any suggestions (e.g., add captions, broaden examples, adjust timing). I'll update the assessments. Type "finalize" when done."""
+            else:
+                # Treat message as refinement suggestions and regenerate
+                assessments_md = session['context'].get('last_assessments') or "(no assessments cached)"
+                refined = apply_user_refinements(assessments_md, message, session['context'])
+                session['context']['last_assessments'] = refined
+                response_content = f"""# Updated UDL Assessment Options & Rubric 🔄
+
+{refined}
+
+---
+
+Provide more suggestions to iterate, or type "finalize" to finish."""
+        
+        elif current_state == "IterationPhase":
+            # Mirror QualityCheckPhase behavior to allow continued iteration
+            lower = message.lower().strip()
+            if lower in ['finalize', 'done', 'finish', 'no more changes']:
+                session['state'] = 'End'
+                response_content = """# Session Finalized ✅
+
+Your UDL assessment set is ready. To start a new session, type "design" or "evaluate"."""
+            else:
+                assessments_md = session['context'].get('last_assessments') or "(no assessments cached)"
+                refined = apply_user_refinements(assessments_md, message, session['context'])
+                session['context']['last_assessments'] = refined
+                response_content = f"""# Updated UDL Assessment Options & Rubric 🔄
+
+{refined}
+
+---
+
+Provide more suggestions to iterate, or type "finalize" to finish."""
+        
+        # End State
+        elif current_state == "End":
+            if message.lower().strip() in ['design', 'evaluate']:
+                # Reset session and start new branch
+                session['state'] = 'Start'
+                session['branch'] = None
+                session['context'] = {
+                    "learning_objectives": None,
+                    "grade_level": None,
+                    "subject": None,
+                    "assessment_content": None,
+                    "assessment_alignment": None
+                }
+                # Recursive call to handle the new mode selection
+                return chat()
         else:
-            # Fallback to general guidance
-            response_content = get_general_udl_guidance(message)
+                response_content = """# Ready for New Session 🚀
+
+To start a new session, please type:
+- **"design"** - Create new UDL assessments
+- **"evaluate"** - Analyze existing assessments"""
         
         # Add assistant response to session
         session['messages'].append({
@@ -931,12 +1030,14 @@ Ready for your next lesson's assessments? 🚀"""
         return jsonify({
             'response': response_content,
             'session_token': session_token,
-            'conversation_state': session['conversation_state'],
+            'state': session['state'],
+            'branch': session['branch'],
             'message_count': len(session['messages']),
             'context_summary': {
                 'has_objectives': bool(session['context']['learning_objectives']),
                 'has_grade_level': bool(session['context']['grade_level']),
-                'has_subject': bool(session['context']['subject'])
+                'has_subject': bool(session['context']['subject']),
+                'has_assessment': bool(session['context']['assessment_content'])
             }
         })
         
@@ -974,15 +1075,14 @@ def reset_session(session_token):
     # Reset session to initial state
     chat_sessions[session_token] = {
         "messages": [],
-        "conversation_state": "waiting_for_mode_selection",
-        "mode": None,
+        "state": "Start",
+        "branch": None,
         "context": {
             "learning_objectives": None,
             "grade_level": None,
             "subject": None,
-            "formal_curriculum": None,
-            "curriculum_provided": False,
-            "assessment_content": None
+            "assessment_content": None,
+            "assessment_alignment": None
         },
         "created_at": datetime.now().isoformat(),
         "last_activity": datetime.now().isoformat()
@@ -992,7 +1092,7 @@ def reset_session(session_token):
     return jsonify({
         'message': 'Session reset successfully',
         'session_token': session_token,
-        'conversation_state': 'waiting_for_objectives'
+        'state': 'Start'
     })
 
 @app.route('/')

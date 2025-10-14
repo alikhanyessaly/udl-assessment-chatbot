@@ -281,6 +281,30 @@
             align-items: flex-end;
         }
 
+        .file-upload-button {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .file-upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
         .chat-input {
             flex: 1;
             min-height: 50px;
@@ -483,6 +507,7 @@
         <div class="chat-header">
             <div class="session-info" id="sessionInfo">
                 <i class="fas fa-key"></i> Session: <span id="sessionToken">New</span>
+                <span id="currentState" style="margin-left: 10px; font-size: 0.8rem; opacity: 0.8;"></span>
                 <button id="clearSessionBtn" onclick="clearSession()" style="margin-left: 10px; background: none; border: none; color: white; cursor: pointer; opacity: 0.7;" title="Clear session">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -526,29 +551,11 @@
                     </div>
                 </div>
 
-                <div class="examples-section">
-                    <h3 style="margin-bottom: 15px; color: #374151; font-size: 1.1rem; text-align: center;">
-                        <i class="fas fa-lightbulb"></i> Try These Examples
-                    </h3>
-                    <div class="quick-actions">
-                        <div class="quick-action" onclick="sendQuickMessage('My learning objectives are for students to understand photosynthesis, identify plant parts, and explain the process to others. Subject is Biology, grade level is 8th grade')">
-                            <i class="fas fa-seedling"></i> Biology
-                        </div>
-                        <div class="quick-action" onclick="sendQuickMessage('Students need to solve linear equations, graph solutions, and explain their mathematical reasoning. Subject is Mathematics, grade level is 9th grade')">
-                            <i class="fas fa-calculator"></i> Math
-                        </div>
-                        <div class="quick-action" onclick="sendQuickMessage('My students should analyze historical causes of World War II, evaluate primary sources, and present findings. Subject is History, grade level is 10th grade')">
-                            <i class="fas fa-scroll"></i> History
-                        </div>
-                        <div class="quick-action" onclick="sendQuickMessage('Students will write persuasive essays, analyze literary themes, and present oral arguments. Subject is English Language Arts, grade level is 7th grade')">
-                            <i class="fas fa-book"></i> English
-                        </div>
-                    </div>
-                </div>
+                <!-- Examples/quick actions removed to declutter welcome screen -->
                 
                 <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
                     <i class="fas fa-info-circle"></i> 
-                    <strong>Ready to start?</strong> Simply share your learning objectives in your own words, and I'll guide you through the rest!
+                    <strong>Ready to start?</strong> Choose "Design" to create new assessments or "Evaluate" to analyze existing ones!
                 </p>
             </div>
         </div>
@@ -559,6 +566,10 @@
 
         <div class="chat-input-container">
             <form class="chat-input-form" id="chatForm">
+                <input type="file" id="fileInput" accept=".pdf" />
+                <button type="button" class="file-upload-button" id="fileUploadButton" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-paperclip"></i>
+                </button>
                 <textarea 
                     class="chat-input" 
                     id="messageInput" 
@@ -584,11 +595,59 @@
             const chatMessages = document.getElementById('chatMessages');
             const typingIndicator = document.getElementById('typingIndicator');
             const sessionInfo = document.getElementById('sessionToken');
+            const currentState = document.getElementById('currentState');
+            const fileInput = document.getElementById('fileInput');
 
             // Load existing session if available
             if (sessionToken) {
                 loadExistingSession();
             }
+
+            // Handle file upload
+            fileInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Remove welcome message if it exists
+                const welcomeMessage = chatMessages.querySelector('.welcome-message');
+                if (welcomeMessage) {
+                    welcomeMessage.remove();
+                }
+
+                // Add system message
+                addMessage(`Uploading PDF: ${file.name}...`, 'user');
+                showTyping();
+                sendButton.disabled = true;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('session_token', sessionToken || '');
+
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        addMessage(`PDF uploaded successfully! I've extracted the assessment content.`, 'assistant');
+                        // Automatically send a message to process the uploaded assessment
+                        setTimeout(() => {
+                            sendMessage('I uploaded my assessment as a PDF');
+                        }, 500);
+                    } else {
+                        addMessage(`Upload error: ${data.error}`, 'assistant');
+                    }
+                } catch (error) {
+                    addMessage(`Upload failed: ${error.message}`, 'assistant');
+                } finally {
+                    hideTyping();
+                    sendButton.disabled = false;
+                    fileInput.value = ''; // Reset file input
+                }
+            });
 
             // Auto-resize textarea
             messageInput.addEventListener('input', function() {
@@ -692,6 +751,12 @@
                             sessionInfo.textContent = sessionToken.substring(0, 8) + '...';
                         }
                         
+                        // Update current state display
+                        if (data.state) {
+                            const stateDisplay = getStateDisplayName(data.state, data.branch);
+                            currentState.textContent = `State: ${stateDisplay}`;
+                        }
+                        
                         // Add assistant response
                         addMessage(data.response, 'assistant');
                         messageCount = data.message_count;
@@ -712,10 +777,34 @@
                 sendMessage(mode);
             }
 
+            // State display function
+            function getStateDisplayName(state, branch) {
+                const stateMap = {
+                    'Start': 'Welcome',
+                    'DesignMode': 'Design - Input Info',
+                    'DesignInputReceived': 'Design - Has Assessment?',
+                    'DesignAssessmentYes': 'Design - Upload Assessment',
+                    'DesignAssessmentReceived': 'Design - Choose Action',
+                    'DesignAssessmentNo': 'Design - Creating New',
+                    'EvaluateMode': 'Evaluate - Input Info',
+                    'EvaluateInputReceived': 'Evaluate - Upload Assessment',
+                    'EvaluateAssessmentReceived': 'Evaluate - Analyzing',
+                    'EvaluateAligned': 'Evaluate - Aligned',
+                    'EvaluateNotAligned': 'Evaluate - Not Aligned',
+                    'ProvideNotAlignedReason': 'Evaluate - Analysis Complete',
+                    'AssessmentCreationMode': 'Creating Assessments',
+                    'QualityCheckPhase': 'Quality Check',
+                    'IterationPhase': 'Review & Iterate',
+                    'End': 'Session Complete'
+                };
+                return stateMap[state] || state;
+            }
+
             // Make functions available globally
             window.sendMessage = sendMessage;
             window.sendQuickMessage = sendQuickMessage;
             window.selectMode = selectMode;
+            window.getStateDisplayName = getStateDisplayName;
 
             async function loadExistingSession() {
                 try {
@@ -737,6 +826,12 @@
                             // Update session info
                             sessionInfo.textContent = sessionToken.substring(0, 8) + '...';
                             messageCount = data.messages.length;
+                            
+                            // Update state display if available
+                            if (data.state) {
+                                const stateDisplay = getStateDisplayName(data.state, data.branch);
+                                currentState.textContent = `State: ${stateDisplay}`;
+                            }
                         }
                     }
                 } catch (error) {
@@ -764,6 +859,7 @@
                 
                 // Update UI
                 document.getElementById('sessionToken').textContent = 'New';
+                document.getElementById('currentState').textContent = '';
                 
                 // Clear chat messages and show welcome screen
                 const chatMessages = document.getElementById('chatMessages');

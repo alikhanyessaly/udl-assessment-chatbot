@@ -1,0 +1,148 @@
+# 🧠 UDL Assessment Assistant – Logic Flow
+
+## State: Start
+**Bot Message:**
+"Welcome to the UDL Assessment Assistant. Please choose one of the following options:"
+- Option 1: Design → go to `DesignMode`
+- Option 2: Evaluate → go to `EvaluateMode`
+
+---
+
+## 🧩 Design Branch
+
+### State: DesignMode
+**Bot Message:**
+"Could you provide:
+1) Learning Objectives
+2) Grade
+3) Subject"
+**User Input:**
+1) Learning Objectives
+2) Grade
+3) Subject
+**Next State:** `DesignInputReceived`
+
+---
+
+### State: DesignInputReceived
+**Bot Message:**
+"Do you have an assessment that you would like to create UDL options for?"
+**User Input:**
+- Yes → go to `DesignAssessmentYes`
+- No → go to `DesignAssessmentNo`
+
+---
+
+### State: DesignAssessmentYes
+**Bot Message:**
+"Please upload or describe the assessment you’d like to create UDL options for."
+**User Input:**
+- Uploaded file (e.g., Assessment.pdf)
+- or Text description
+**Next State:** `DesignAssessmentReceived`
+
+---
+
+### State: DesignAssessmentReceived
+**Bot Message:**
+"Would you like to  
+1) Evaluate this assessment  
+or  
+2) Create alternative versions that align with UDL?"
+**User Input:**
+- Option 1 → go to `EvaluateAssessmentReceived`
+- Option 2 → go to `AssessmentCreationMode`
+
+---
+
+### State: DesignAssessmentNo
+**Bot Message:**
+"Let’s create a new assessment together based on your provided objectives, grade, and subject."
+**Next State:** `AssessmentCreationMode`
+**Bot Action:**
+Initiates the assessment creation process according to selected criteria.
+
+---
+
+## 🧮 Evaluate Branch
+
+### State: EvaluateMode
+**Bot Message:**
+"Could you provide:
+1) Learning Objectives
+2) Grade
+3) Subject"
+**User Input:**
+1) Learning Objectives
+2) Grade
+3) Subject
+**Next State:** `EvaluateInputReceived`
+
+---
+
+### State: EvaluateInputReceived
+**Bot Message:**
+"Could you upload the assessment for evaluation?"
+**User Input:**
+- Uploaded file: Assignment 1 (PDF)
+- or Text description of assessment
+**Next State:** `EvaluateAssessmentReceived`
+
+---
+
+### State: EvaluateAssessmentReceived
+**Bot Action:**
+Runs **Classifier** → checks alignment with UDL guidelines
+- If Aligned → go to `EvaluateAligned`
+- If Not Aligned → go to `EvaluateNotAligned`
+
+---
+
+### State: EvaluateAligned
+**Bot Message:**
+"This assignment is aligned with UDL guidelines because [explanation]."
+**Next State:** `End`
+
+---
+
+### State: EvaluateNotAligned
+**Bot Message:**
+"This assignment is not fully aligned with UDL guidelines.  
+Would you like to adapt this assessment to UDL?"
+**User Input:**
+- Yes → go to `AssessmentCreationMode`
+- No → go to `ProvideNotAlignedReason`
+
+---
+
+### State: ProvideNotAlignedReason
+**Bot Message:**
+"Here’s why this assignment is not aligned with UDL guidelines: [analysis]."
+**Next State:** `End`
+
+---
+
+## 🛠 Shared State: AssessmentCreationMode
+**Bot Message:**
+"Assessment Options available:
+- Universal Rubric
+- Requires a Quality Check"
+**Bot Action:**
+Initiates creation of UDL-aligned assessment versions based on learning objectives, grade, and subject.
+**Next State:** `QualityCheckPhase`
+
+---
+
+### State: QualityCheckPhase
+**Bot Message:**
+"Now performing Quality Check of materials and application in the classroom..."
+**Next State:** `IterationPhase`
+
+---
+
+### State: IterationPhase
+**Bot Message:**
+"Review results and iterate for further improvement."
+**Bot Action:**
+Offers the user to refine or finalize the assessment.
+**Next State:** `End`
